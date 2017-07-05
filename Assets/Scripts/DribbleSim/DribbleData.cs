@@ -12,11 +12,11 @@ public class DribbleData : ScriptableObject
         public float OutTime;
         public float OutNormalizedTime;
         public Hand OutHand;
-        public Vector3 OutPosition;
+        public Vector3[] OutPosition = new Vector3[(int)BodyType.Count];
         public float InTime;
         public float InNormalizedTime;
         public Hand InHand;
-        public Vector3 InPosition;
+        public Vector3[] InPosition = new Vector3[(int)BodyType.Count];
     }
 
     [Serializable]

@@ -5,9 +5,9 @@ using UnityEditor;
 
 public static class TargetMatchingSampler
 {
-    public static void Sample(GameObject go, AnimationClip[] clips)
+    public static void Sample(GameObject[] bodies, AnimationClip[] clips)
     {
-        string filename = "Assets/Resources/Data/TargetMatching/" + go.name + ".asset";
+        string filename = "Assets/Resources/Data/TargetMatching.asset";
         TargetMatchingData data = AssetDatabase.LoadAssetAtPath<TargetMatchingData>(filename);
         if (data == null)
         {
@@ -18,8 +18,8 @@ public static class TargetMatchingSampler
 
         foreach (var clip in clips)
         {
-            Debug.LogFormat("导出TargetMatching数据，{0} {1}", go.name, clip.name);
-            TargetMatchingData.Clip clipInfo = Sample(go, clip);
+            Debug.LogFormat("导出TargetMatching数据，{0}", clip.name);
+            TargetMatchingData.Clip clipInfo = Sample(bodies, clip);
             if (clipInfo != null)
                 data.Clips.Add(clipInfo);
         }
@@ -27,7 +27,7 @@ public static class TargetMatchingSampler
         EditorUtility.SetDirty(data);
     }
 
-    public static TargetMatchingData.Clip Sample(GameObject go, AnimationClip clip)
+    public static TargetMatchingData.Clip Sample(GameObject[] bodies, AnimationClip clip)
     {
         TargetMatchingData.Clip info = null;
         TargetMatchingData.Entry curEntry = null;
@@ -37,11 +37,8 @@ public static class TargetMatchingSampler
             var evt = events[i];
             if (evt.functionName == "StartMatching")
             {
-                var matchingInfo = ParseMatchingInfo(evt.stringParameter);
-                AnimationMode.BeginSampling();
-                AnimationMode.SampleAnimationClip(go, clip, evt.time);
-                AnimationMode.EndSampling();
                 Debug.Assert(curEntry == null);
+                var matchingInfo = ParseMatchingInfo(evt.stringParameter);
 
                 if (info == null)
                 {
@@ -56,21 +53,31 @@ public static class TargetMatchingSampler
                     TargetBodyPart = matchingInfo.Key,
                     StartTime = evt.time,
                     StartNormalizedTime = evt.time / clip.length,
-                    StartPosition = go.transform.Find("Root/Bip001/Hips").position,
                     PositionWeight = matchingInfo.Value,
                 };
+
+                for (int j = 0; j < (int)BodyType.Count; ++j)
+                {
+                    GameObject body = bodies[j];
+                    AnimationMode.BeginSampling();
+                    AnimationMode.SampleAnimationClip(body, clip, evt.time);
+                    AnimationMode.EndSampling();
+                    curEntry.StartPosition[j] = body.transform.Find("Root/Bip001/Hips").position;
+                }
             }
             else if (evt.functionName == "EndMatching")
             {
-                AnimationMode.BeginSampling();
-                AnimationMode.SampleAnimationClip(go, clip, evt.time);
-                AnimationMode.EndSampling();
-
                 Debug.Assert(curEntry != null);
-
                 curEntry.TargetTime = evt.time;
                 curEntry.TargetNormalizedTime = evt.time / clip.length;
-                curEntry.TargetPosition = go.transform.Find("Root/Bip001/Hips").position;
+                for (int j = 0; j < (int)BodyType.Count; ++j)
+                {
+                    GameObject body = bodies[j];
+                    AnimationMode.BeginSampling();
+                    AnimationMode.SampleAnimationClip(body, clip, evt.time);
+                    AnimationMode.EndSampling();
+                    curEntry.TargetPosition[j] = body.transform.Find("Root/Bip001/Hips").position;
+                }
 
                 info.Entries.Add(curEntry);
                 events[i].messageOptions = SendMessageOptions.DontRequireReceiver;

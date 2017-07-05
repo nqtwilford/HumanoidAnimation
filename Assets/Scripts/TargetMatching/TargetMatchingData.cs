@@ -13,8 +13,8 @@ public class TargetMatchingData : ScriptableObject
         public float StartNormalizedTime;
         public float TargetTime;
         public float TargetNormalizedTime;
-        public Vector3 StartPosition;
-        public Vector3 TargetPosition;
+        public Vector3[] StartPosition = new Vector3[(int)BodyType.Count];
+        public Vector3[] TargetPosition = new Vector3[(int)BodyType.Count];
         public Vector3 PositionWeight;
     }
 

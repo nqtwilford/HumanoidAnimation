@@ -55,6 +55,7 @@ public class DribbleSimulator : MonoBehaviour
 
     bool mReattachBall = false;
 
+    BodyType mBodyType;
     Animator mAnimator;
     TargetMatching mTargetMatching;
     Transform[] mHands = new Transform[(int)Hand.Max];
@@ -75,6 +76,7 @@ public class DribbleSimulator : MonoBehaviour
         transform.Find("BallGeoR").gameObject.SetActive(false);
         mAnimator = GetComponent<Animator>();
         mTargetMatching = GetComponent<TargetMatching>();
+        mBodyType = (BodyType)Enum.Parse(BodyType.Count.GetType(), name);
         mHands[(int)Hand.Left] = transform.Find("Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/Leftball");
         mHands[(int)Hand.Right] = transform.Find("Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/Rightball");
         mHands[(int)Hand.Both] = transform.Find("Root/Ball");
@@ -88,7 +90,7 @@ public class DribbleSimulator : MonoBehaviour
 
     void Start()
     {
-        mDribbleInfo = Resources.Load<DribbleData>("Data/Dribble/" + name);
+        mDribbleInfo = Resources.Load<DribbleData>("Data/Dribble");
     }
 
     void Update()
@@ -219,8 +221,8 @@ public class DribbleSimulator : MonoBehaviour
         }
 
         float time = entry.InTime - entry.OutTime;
-        Vector3 outPos = entry.OutPosition + targetMatchingAdjustOut;
-        Vector3 inPos = entry.InPosition + targetMatchingAdjustIn;
+        Vector3 outPos = entry.OutPosition[(int)mBodyType] + targetMatchingAdjustOut;
+        Vector3 inPos = entry.InPosition[(int)mBodyType] + targetMatchingAdjustIn;
         if (mMirror)
         {
             outPos.x = -outPos.x;

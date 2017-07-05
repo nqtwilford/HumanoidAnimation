@@ -23,29 +23,43 @@ public class AnimationExporter// : AssetPostprocessor
     static void ExportAll()
     {
         AnimationMode.StartAnimationMode();
-        var controller = Resources.Load<RuntimeAnimatorController>("Controllers/All");
-        GameObject[] models = Resources.LoadAll<GameObject>("FBX/Bodies");
-        //GameObject[] bodies = new GameObject[models.Length];
-        for (int i = 0; i < models.Length; ++i)
+        GameObject[] bodies = new GameObject[(int)BodyType.Count];
+        try
         {
-            GameObject inst = Object.Instantiate(models[i]);
-            inst.name = models[i].name;
-            inst.hideFlags = HideFlags.HideAndDontSave;
-            inst.transform.position = Vector3.zero;
-            Animator animator = inst.GetComponent<Animator>();
-            if (animator == null)
-                animator = inst.AddComponent<Animator>();
-            animator.runtimeAnimatorController = controller;
+            var controller = Resources.Load<RuntimeAnimatorController>("Controllers/All");
+            for (int i = 0; i < (int)BodyType.Count; ++i)
+            {
+                GameObject prefab = Resources.Load<GameObject>("FBX/Bodies/" + (BodyType)i);
+                GameObject inst = Object.Instantiate(prefab);
+                inst.name = prefab.name;
+                inst.hideFlags = HideFlags.HideAndDontSave;
+                inst.transform.position = Vector3.zero;
+                Animator animator = inst.GetComponent<Animator>();
+                if (animator == null)
+                    animator = inst.AddComponent<Animator>();
+                animator.runtimeAnimatorController = controller;
+                bodies[i] = inst;
+            }
 
-            DribbleSimSampler.Sample(inst, controller.animationClips);
-            TargetMatchingSampler.Sample(inst, controller.animationClips);
-
-            Object.DestroyImmediate(inst);
+            DribbleSimSampler.Sample(bodies, controller.animationClips);
+            TargetMatchingSampler.Sample(bodies, controller.animationClips);
         }
-        AnimationMode.StopAnimationMode();
+        catch (System.Exception ex)
+        {
+            Debug.LogFormat("ex:{0}", ex);
+        }
+        finally
+        {
+            for (int i = 0; i < (int)BodyType.Count; ++i)
+            {
+                GameObject inst = bodies[i];
+                if (inst != null)
+                    Object.DestroyImmediate(inst);
+            }
+            AnimationMode.StopAnimationMode();
+            AssetDatabase.SaveAssets();
+        }
 
         //var ctrl = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>("Assets/Resources/FBX/Controllers/All.controller");
-
-        AssetDatabase.SaveAssets();
     }
 }
