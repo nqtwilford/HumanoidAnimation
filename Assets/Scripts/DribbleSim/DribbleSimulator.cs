@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEditor;
 
 public enum DribbleType
 {
@@ -65,8 +64,8 @@ public class DribbleSimulator : MonoBehaviour
     Vector3 mVelocity;
     float mPlaySpeed = 1f;
     bool mMirror = false;
-    Vector3 mLastPos;
-    float mLastNormalizedTime = 0f;
+    //Vector3 mLastPos;
+    //float mLastNormalizedTime = 0f;
     Vector3 mInitialPos;
 
     void Awake()
@@ -83,23 +82,13 @@ public class DribbleSimulator : MonoBehaviour
         goBall.name = "Ball";
         goBall.GetComponent<Renderer>().material.color = Color.red;
         mBall = goBall.transform;
-        mLastPos = transform.position;
+        //mLastPos = transform.position;
         mInitialPos = transform.position;
     }
 
     void Start()
     {
         mDribbleInfo = Resources.Load<DribbleData>("Data/Dribble/" + name);
-        /*
-        foreach (var clipInfo in dribbleInfo.Infos)
-        {
-            foreach (var info in clipInfo.Events)
-            {
-                Debug.LogFormat("Time:{0} {1} Hand:{2} {3} Pos:{4} {5}", info.ReleaseNormalizedTime, info.RegainNormalizedTime, 
-                    info.ReleaseHand, info.RegainHand, info.ReleasePosition, info.RegainPosition);
-            }
-        }
-        //*/
     }
 
     void Update()
@@ -107,8 +96,8 @@ public class DribbleSimulator : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.R))
         {
             transform.position = mInitialPos;
-            mLastPos = mInitialPos;
-            mLastNormalizedTime = 0f;
+            //mLastPos = mInitialPos;
+            //mLastNormalizedTime = 0f;
             mAnimator.Play("None", 0, 0);
         }
         if (Input.GetKeyUp(KeyCode.Space))
@@ -141,10 +130,11 @@ public class DribbleSimulator : MonoBehaviour
 
         if (mReattachBall)
         {
-            reattachBall();
+            ReattachBall();
             mReattachBall = false;
         }
 
+        /*
         var curStateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
         if (curStateInfo.shortNameHash == Animator.StringToHash("spinmove"))
         {
@@ -173,9 +163,10 @@ public class DribbleSimulator : MonoBehaviour
                 go.transform.GetComponent<Renderer>().material.color = mTargetMatching.enabled ? Color.red : Color.blue;
             }
         }
+        */
     }
 
-    void reattachBall()
+    void ReattachBall()
     {
         if (mState == DribbleState.None)
         {
@@ -198,70 +189,64 @@ public class DribbleSimulator : MonoBehaviour
         }
     }
 
-    void DribbleRelease(string args)
+    void DribbleOut(string args)
     {
         AnimatorStateInfo curInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
-        var clipInfo = mDribbleInfo.Infos.Find(ci => ci.NameHash == curInfo.shortNameHash);
+        var clipInfo = mDribbleInfo.Clips.Find(ci => ci.NameHash == curInfo.shortNameHash);
         Debug.AssertFormat(clipInfo != null, "Can't find dribble clip info");
 
         DribbleType type;
-        Hand handSide;
-        if (!TryParseReleaseInfo(args, out type, out handSide))
+        Hand hand;
+        if (!TryParseOutInfo(args, out type, out hand))
         {
-            Debug.LogErrorFormat("错误的DribbleRelease参数: {0} GO: {1} Clip: {2}", args, name, clipInfo.ClipName);
+            Debug.LogErrorFormat("错误的DribbleOut参数: {0} GO: {1} Clip: {2}", args, name, clipInfo.ClipName);
             return;
         }
-        //Debug.LogFormat("DribbleRelease, {0} {1} NorTime:{2}", type, handSide, curInfo.normalizedTime);
+        //Debug.LogFormat("DribbleOut, {0} {1} NorTime:{2}", type, handSide, curInfo.normalizedTime);
         float normalizedTime = curInfo.normalizedTime;
         if (curInfo.loop)
             normalizedTime = curInfo.normalizedTime % 1;
 
-        var eventInfo = clipInfo.Events.Find(ei => Mathf.Abs(normalizedTime - ei.ReleaseNormalizedTime) < 0.01f);
-        Debug.Assert(eventInfo != null);
+        var entry = clipInfo.Entries.Find(ei => Mathf.Abs(normalizedTime - ei.OutNormalizedTime) < 0.01f);
+        Debug.AssertFormat(entry != null, "DibbleOut, entry not found. NormalizedTime: {0}", normalizedTime);
 
-        Vector3 targetMatchingAdjustRelease = Vector3.zero;
-        Vector3 targetMatchingAdjustRegain = Vector3.zero;
+        Vector3 targetMatchingAdjustOut = Vector3.zero;
+        Vector3 targetMatchingAdjustIn = Vector3.zero;
         if (mTargetMatching != null)
         {
-            targetMatchingAdjustRelease = mTargetMatching.GetAdjust(curInfo.shortNameHash, eventInfo.ReleaseNormalizedTime);
-            targetMatchingAdjustRegain = mTargetMatching.GetAdjust(curInfo.shortNameHash, eventInfo.RegainNormalizedTime);
+            targetMatchingAdjustOut = mTargetMatching.GetAdjust(curInfo.shortNameHash, entry.OutNormalizedTime);
+            targetMatchingAdjustIn = mTargetMatching.GetAdjust(curInfo.shortNameHash, entry.InNormalizedTime);
         }
 
-        float time = eventInfo.RegainTime - eventInfo.ReleaseTime;
-        Vector3 releasePos = eventInfo.ReleasePosition + targetMatchingAdjustRelease;
-        Vector3 regainPos = eventInfo.RegainPosition + targetMatchingAdjustRegain;
+        float time = entry.InTime - entry.OutTime;
+        Vector3 outPos = entry.OutPosition + targetMatchingAdjustOut;
+        Vector3 inPos = entry.InPosition + targetMatchingAdjustIn;
         if (mMirror)
         {
-            releasePos.x = -releasePos.x;
-            regainPos.x = -regainPos.x;
+            outPos.x = -outPos.x;
+            inPos.x = -inPos.x;
         }
-        releasePos = transform.TransformPoint(releasePos);
-        regainPos = transform.TransformPoint(regainPos);
-        mVelocity = (regainPos - releasePos) / time;
-        mVelocity.y = -(regainPos.y + releasePos.y) / time;
+        outPos = transform.TransformPoint(outPos);
+        inPos = transform.TransformPoint(inPos);
+        mVelocity = (inPos - outPos) / time;
+        mVelocity.y = -(inPos.y + outPos.y) / time;
         State = DribbleState.Dribbling;
         mPlaySpeed = curInfo.speed;
-        //GameObject marker = new GameObject("DribbleRelease");
-        //marker.transform.position = hands[(int)handSide].position;
     }
 
-    void DribbleRegain(string args)
+    void DribbleIn(string args)
     {
         Debug.Assert(State == DribbleState.Dribbling);
-        AnimatorStateInfo info = mAnimator.GetCurrentAnimatorStateInfo(0);
-        Hand handSide;
-        TryParseRegainInfo(args, out handSide);
-        //Debug.LogFormat("DribbleRegain, {0} {1}", handSide, info.normalizedTime);
-        //GameObject marker = new GameObject("DribbleRegain");
-        //marker.transform.position = hands[(int)handSide].position;
+        Hand hand;
+        TryParseInInfo(args, out hand);
         State = DribbleState.InHand;
         if (mMirror)
-            Hand = MirrorHandSide(handSide);
+            Hand = MirrorHand(hand);
         else
-            Hand = handSide;
+            Hand = hand;
     }
 
-    public static bool TryParseReleaseInfo(string args, out DribbleType type, out Hand handSide)
+    public static bool TryParseOutInfo(string args, out DribbleType type, out Hand handSide)
     {
         try
         {
@@ -278,7 +263,7 @@ public class DribbleSimulator : MonoBehaviour
         }
     }
 
-    public static bool TryParseRegainInfo(string args, out Hand handSide)
+    public static bool TryParseInInfo(string args, out Hand handSide)
     {
         try
         {
@@ -287,13 +272,12 @@ public class DribbleSimulator : MonoBehaviour
         }
         catch
         {
-            Debug.LogErrorFormat("DribbleRegain, 错误的参数格式: {0}", args);
             handSide = Hand.Max;
             return false;
         }
     }
 
-    public static Hand MirrorHandSide(Hand handSide)
+    public static Hand MirrorHand(Hand handSide)
     {
         switch (handSide)
         {

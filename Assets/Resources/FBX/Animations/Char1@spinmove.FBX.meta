@@ -235,28 +235,28 @@ ModelImporter:
       curves: []
       events:
       - time: 0.05286757
-        functionName: DribbleRelease
+        functionName: DribbleOut
         data: 0, Left
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.20401034
-        functionName: DribbleRegain
+        functionName: DribbleIn
         data: Right
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.5409773
-        functionName: DribbleRelease
+        functionName: DribbleOut
         data: 0, Right
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.7975346
-        functionName: DribbleRegain
+        functionName: DribbleIn
         data: Left
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

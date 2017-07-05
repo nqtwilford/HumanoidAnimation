@@ -15,13 +15,13 @@ public static class DribbleSimSampler
             info = ScriptableObject.CreateInstance<DribbleData>();
             AssetDatabase.CreateAsset(info, filename);
         }
-        info.Infos.Clear();
+        info.Clips.Clear();
 
         foreach (var clip in clips)
         {
             Debug.LogFormat("导出运球数据，{0} {1}", go.name, clip.name);
             var clipInfo = Sample(go, clip);
-            info.Infos.Add(clipInfo);
+            info.Clips.Add(clipInfo);
         }
 
         EditorUtility.SetDirty(info);
@@ -50,7 +50,7 @@ public static class DribbleSimSampler
         DribbleData.Entry curEventInfo = null;
         foreach (var evt in clip.events)
         {
-            if (evt.functionName == "DribbleRelease")
+            if (evt.functionName == "DribbleOut")
             {
                 AnimationMode.BeginSampling();
                 AnimationMode.SampleAnimationClip(go, clip, evt.time);
@@ -58,23 +58,23 @@ public static class DribbleSimSampler
 
                 DribbleType type;
                 Hand hand;
-                if (!DribbleSimulator.TryParseReleaseInfo(evt.stringParameter, out type, out hand))
+                if (!DribbleSimulator.TryParseOutInfo(evt.stringParameter, out type, out hand))
                 {
-                    Debug.LogErrorFormat("错误的DribbleRelease参数: {0} GO: {1} Clip: {2}",
+                    Debug.LogErrorFormat("错误的DribbleOut参数: {0} GO: {1} Clip: {2}",
                         evt.stringParameter, go.name, clipInfo.ClipName);
                     return null;
                 }
-                Vector3 releasePos = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                Vector3 outPos = (hand == Hand.Left ? leftBall.position : rightBall.position);
                 curEventInfo = new DribbleData.Entry()
                 {
-                    ReleaseTime = evt.time,
-                    ReleaseNormalizedTime = evt.time / clip.length,
+                    OutTime = evt.time,
+                    OutNormalizedTime = evt.time / clip.length,
                     Type = type,
-                    ReleaseHand = hand,
-                    ReleasePosition = releasePos,
+                    OutHand = hand,
+                    OutPosition = outPos,
                 };
             }
-            else if (evt.functionName == "DribbleRegain")
+            else if (evt.functionName == "DribbleIn")
             {
                 AnimationMode.BeginSampling();
                 AnimationMode.SampleAnimationClip(go, clip, evt.time);
@@ -82,17 +82,17 @@ public static class DribbleSimSampler
 
                 if (curEventInfo == null)
                 {
-                    Debug.LogErrorFormat("Release与Regain不匹配, GameObject:{0} clip:{1}", go.name, clip.name);
+                    Debug.LogErrorFormat("Out与In不匹配, GameObject:{0} clip:{1}", go.name, clip.name);
                     return null;
                 }
                 Hand hand;
-                DribbleSimulator.TryParseRegainInfo(evt.stringParameter, out hand);
-                Vector3 regainPos = (hand == Hand.Left ? leftBall.position : rightBall.position);
-                curEventInfo.RegainTime = evt.time;
-                curEventInfo.RegainNormalizedTime = evt.time / clip.length;
-                curEventInfo.RegainHand = hand;
-                curEventInfo.RegainPosition = regainPos;
-                clipInfo.Events.Add(curEventInfo);
+                DribbleSimulator.TryParseInInfo(evt.stringParameter, out hand);
+                Vector3 inPos = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                curEventInfo.InTime = evt.time;
+                curEventInfo.InNormalizedTime = evt.time / clip.length;
+                curEventInfo.InHand = hand;
+                curEventInfo.InPosition = inPos;
+                clipInfo.Entries.Add(curEventInfo);
                 curEventInfo = null;
             }
             //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);

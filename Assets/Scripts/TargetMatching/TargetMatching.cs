@@ -39,11 +39,13 @@ public class TargetMatching : MonoBehaviour
         Vector3 targetPosition = transform.position + transform.TransformDirection(dir) * dist;
         mAnimator.MatchTarget(targetPosition, Quaternion.identity, entry.TargetBodyPart,
             new MatchTargetWeightMask(entry.PositionWeight, 0f), entry.StartNormalizedTime, entry.TargetNormalizedTime);
+        /*
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = "TargetPosition";
         go.transform.position = targetPosition;
         go.GetComponent<Renderer>().material.color = Color.red;
         go.transform.localScale = Vector3.one / 10;
+        */
     }
 
     public Vector3 GetAdjust(int clipNameHash, float normalizedTime)
