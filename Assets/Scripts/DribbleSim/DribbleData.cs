@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
 
 [Serializable]
 public class DribbleData : ScriptableObject
@@ -17,6 +18,13 @@ public class DribbleData : ScriptableObject
         public float InNormalizedTime;
         public Hand InHand;
         public Vector3[] InPosition = new Vector3[(int)BodyType.Count];
+
+        public override string ToString()
+        {
+            return string.Format("Dribble type:{0} ({1:F4}|{2:F4}|{3}|{4}) -> ({5:F4}|{6:F4}|{7}|{8})",
+                Type, OutTime, OutNormalizedTime, OutHand, OutPosition[(int)BodyType.Char1_Thin].ToString("F3"),
+                InTime, InNormalizedTime, InHand, InPosition[(int)BodyType.Char1_Thin].ToString("F3"));
+        }
     }
 
     [Serializable]
@@ -25,7 +33,25 @@ public class DribbleData : ScriptableObject
         public int NameHash;
         public string ClipName;
         public List<Entry> Entries = new List<Entry>();
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(ClipName).Append("(").Append(NameHash).AppendLine(") ");
+            foreach (var entry in Entries)
+                builder.AppendLine(entry.ToString());
+            return builder.ToString();
+        }
     }
 
     public List<Clip> Clips = new List<Clip>();
+
+    public override string ToString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.AppendLine("Dribble data:");
+        foreach (Clip clip in Clips)
+            builder.AppendLine(clip.ToString());
+        return builder.ToString();
+    }
 }

@@ -34,12 +34,15 @@ public class AnimationExporter// : AssetPostprocessor
                 inst.name = prefab.name;
                 inst.hideFlags = HideFlags.HideAndDontSave;
                 inst.transform.position = Vector3.zero;
+                inst.transform.forward = Vector3.forward;
                 Animator animator = inst.GetComponent<Animator>();
                 if (animator == null)
                     animator = inst.AddComponent<Animator>();
                 animator.runtimeAnimatorController = controller;
                 bodies[i] = inst;
             }
+
+            //var ctrl = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>("Assets/Resources/Controllers/All.controller");
 
             DribbleSimSampler.Sample(bodies, controller.animationClips);
             TargetMatchingSampler.Sample(bodies, controller.animationClips);
@@ -60,6 +63,5 @@ public class AnimationExporter// : AssetPostprocessor
             AssetDatabase.SaveAssets();
         }
 
-        //var ctrl = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>("Assets/Resources/FBX/Controllers/All.controller");
     }
 }

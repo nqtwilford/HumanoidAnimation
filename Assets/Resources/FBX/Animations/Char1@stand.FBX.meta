@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 8b234933331491246b7cd1758e22cae1
-timeCreated: 1498049129
+guid: 4d60b0247dafd824b9079a03d325d8d0
+timeCreated: 1499333861
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -160,7 +160,7 @@ ModelImporter:
     4300040: BallGeoR
     4300042: BallGeoL
     4300044: BallGeo
-    7400000: spinmove
+    7400000: Take 001
     9500000: //RootNode
     13700000: BallGeo
     13700002: BallGeoL
@@ -196,226 +196,16 @@ ModelImporter:
     optimizeGameObjects: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar to
-      improve retargeting quality.\n\t'Spine' has translation animation that will
-      be discarded.\n\t'Chest' is inbetween humanoid transforms and has rotation animation
-      that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations:
-    - serializedVersion: 16
-      name: spinmove
-      takeName: Take 001
-      firstFrame: 0
-      lastFrame: 24
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 1
-      loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 1
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 1
-      heightFromFeet: 0
-      mirror: 1
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events:
-      - time: 0.05286757
-        functionName: DribbleOut
-        data: 0, Left
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.20401034
-        functionName: DribbleIn
-        data: Right
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.5409773
-        functionName: DribbleOut
-        data: 0, Right
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.7975346
-        functionName: DribbleIn
-        data: Left
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.99605405
-        functionName: EndMatching
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.0041777184
-        functionName: StartMatching
-        data: Root, 1, 0, 1
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      transformMask:
-      - path: 
-        weight: 1
-      - path: BallGeo
-        weight: 0
-      - path: BallGeoL
-        weight: 0
-      - path: BallGeoR
-        weight: 0
-      - path: M_Chest01
-        weight: 0
-      - path: M_Foot01
-        weight: 0
-      - path: M_Head_Europeans01
-        weight: 0
-      - path: M_Hip01
-        weight: 0
-      - path: M_LArm01
-        weight: 0
-      - path: M_LCalf01
-        weight: 0
-      - path: M_LForearm01
-        weight: 0
-      - path: M_LHand01
-        weight: 0
-      - path: M_LKnee01
-        weight: 0
-      - path: M_LShoulder01
-        weight: 0
-      - path: M_LThigh01
-        weight: 0
-      - path: M_Neck01
-        weight: 0
-      - path: M_RArm01
-        weight: 0
-      - path: M_RCalf01
-        weight: 0
-      - path: M_RForearm01
-        weight: 0
-      - path: M_RHand01
-        weight: 0
-      - path: M_RKnee01
-        weight: 0
-      - path: M_RShoulder01
-        weight: 0
-      - path: M_RThigh01
-        weight: 0
-      - path: M_Waist01
-        weight: 0
-      - path: Root
-        weight: 1
-      - path: Root/Ball
-        weight: 1
-      - path: Root/Bip001
-        weight: 1
-      - path: Root/Bip001/Hips
-        weight: 1
-      - path: Root/Bip001/Hips/LeftUpLeg
-        weight: 1
-      - path: Root/Bip001/Hips/LeftUpLeg/LeftLeg
-        weight: 1
-      - path: Root/Bip001/Hips/LeftUpLeg/LeftLeg/LeftFoot
-        weight: 1
-      - path: Root/Bip001/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToe
-        weight: 1
-      - path: Root/Bip001/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToe/L Toe0Nub
-        weight: 0
-      - path: Root/Bip001/Hips/RightUpLeg
-        weight: 1
-      - path: Root/Bip001/Hips/RightUpLeg/RightLeg
-        weight: 1
-      - path: Root/Bip001/Hips/RightUpLeg/RightLeg/RightFoot
-        weight: 1
-      - path: Root/Bip001/Hips/RightUpLeg/RightLeg/RightFoot/RightToe
-        weight: 1
-      - path: Root/Bip001/Hips/RightUpLeg/RightLeg/RightFoot/RightToe/R Toe0Nub
-        weight: 0
-      - path: Root/Bip001/Hips/Spine
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/Leftball
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandMiddle1/LeftHandMiddle2/L
-          Finger1Nub
-        weight: 0
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftHandThumb1/LeftHandThumb2/L
-          Finger0Nub
-        weight: 0
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/Neck
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/Neck/Head
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/Neck/Head/HeadNub
-        weight: 0
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/Rightball
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandMiddle1/RightHandMiddle2/R
-          Finger1Nub
-        weight: 0
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2
-        weight: 1
-      - path: Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/RightHandThumb1/RightHandThumb2/R
-          Finger0Nub
-        weight: 0
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+    clipAnimations: []
     isReadable: 1
   meshes:
     lODScreenPercentages: []

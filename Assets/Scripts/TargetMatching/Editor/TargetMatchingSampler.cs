@@ -18,17 +18,20 @@ public static class TargetMatchingSampler
 
         foreach (var clip in clips)
         {
-            Debug.LogFormat("导出TargetMatching数据，{0}", clip.name);
+            //Debug.LogFormat("导出TargetMatching数据，{0}", clip.name);
             TargetMatchingData.Clip clipInfo = Sample(bodies, clip);
             if (clipInfo != null)
                 data.Clips.Add(clipInfo);
         }
 
         EditorUtility.SetDirty(data);
+
+        Debug.LogFormat("Target matching data exported.\n{0}", data);
     }
 
     public static TargetMatchingData.Clip Sample(GameObject[] bodies, AnimationClip clip)
     {
+        var clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
         TargetMatchingData.Clip info = null;
         TargetMatchingData.Entry curEntry = null;
         AnimationEvent[] events = AnimationUtility.GetAnimationEvents(clip);
@@ -51,7 +54,6 @@ public static class TargetMatchingSampler
                 curEntry = new TargetMatchingData.Entry()
                 {
                     TargetBodyPart = matchingInfo.Key,
-                    StartTime = evt.time,
                     StartNormalizedTime = evt.time / clip.length,
                     PositionWeight = matchingInfo.Value,
                 };
@@ -62,13 +64,15 @@ public static class TargetMatchingSampler
                     AnimationMode.BeginSampling();
                     AnimationMode.SampleAnimationClip(body, clip, evt.time);
                     AnimationMode.EndSampling();
-                    curEntry.StartPosition[j] = body.transform.Find("Root/Bip001/Hips").position;
+                    Vector3 pos = body.transform.Find("Root/Bip001/Hips").position;
+                    if (clipSettings.mirror)
+                        pos.x = -pos.x;
+                    curEntry.StartPosition[j] = pos;
                 }
             }
             else if (evt.functionName == "EndMatching")
             {
                 Debug.Assert(curEntry != null);
-                curEntry.TargetTime = evt.time;
                 curEntry.TargetNormalizedTime = evt.time / clip.length;
                 for (int j = 0; j < (int)BodyType.Count; ++j)
                 {
@@ -76,7 +80,10 @@ public static class TargetMatchingSampler
                     AnimationMode.BeginSampling();
                     AnimationMode.SampleAnimationClip(body, clip, evt.time);
                     AnimationMode.EndSampling();
-                    curEntry.TargetPosition[j] = body.transform.Find("Root/Bip001/Hips").position;
+                    Vector3 pos = body.transform.Find("Root/Bip001/Hips").position;
+                    if (clipSettings.mirror)
+                        pos.x = -pos.x;
+                    curEntry.TargetPosition[j] = pos;
                 }
 
                 info.Entries.Add(curEntry);

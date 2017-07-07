@@ -9,26 +9,29 @@ public static class DribbleSimSampler
     public static void Sample(GameObject[] bodies, AnimationClip[] clips)
     {
         string filename = "Assets/Resources/Data/Dribble.asset";
-        DribbleData info = AssetDatabase.LoadAssetAtPath<DribbleData>(filename);
-        if (info == null)
+        DribbleData data = AssetDatabase.LoadAssetAtPath<DribbleData>(filename);
+        if (data == null)
         {
-            info = ScriptableObject.CreateInstance<DribbleData>();
-            AssetDatabase.CreateAsset(info, filename);
+            data = ScriptableObject.CreateInstance<DribbleData>();
+            AssetDatabase.CreateAsset(data, filename);
         }
-        info.Clips.Clear();
+        data.Clips.Clear();
 
         foreach (var clip in clips)
         {
-            Debug.LogFormat("导出运球数据，Clip: {0}", clip.name);
+            //Debug.LogFormat("导出运球数据，Clip: {0}", clip.name);
             var clipInfo = Sample(bodies, clip);
-            info.Clips.Add(clipInfo);
+            data.Clips.Add(clipInfo);
         }
 
-        EditorUtility.SetDirty(info);
+        EditorUtility.SetDirty(data);
+
+        Debug.LogFormat("Dribble simulation data exported.\n{0}", data);
     }
 
     public static DribbleData.Clip Sample(GameObject[] bodies, AnimationClip clip)
     {
+        var clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
         DribbleData.Clip clipInfo = new DribbleData.Clip()
         {
             ClipName = clip.name,
@@ -52,7 +55,8 @@ public static class DribbleSimSampler
                     OutTime = evt.time,
                     OutNormalizedTime = evt.time / clip.length,
                     Type = type,
-                    OutHand = hand,
+                    OutHand = clipSettings.mirror ? DribbleSimulator.MirrorHand(hand) : hand,
+                    //OutHand = hand,
                 };
 
                 for (int i = 0; i < (int)BodyType.Count; ++i)
@@ -77,7 +81,10 @@ public static class DribbleSimSampler
                         return null;
                     }
 
-                    curEventInfo.OutPosition[i] = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                    Vector3 pos = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                    if (clipSettings.mirror)
+                        pos.x = -pos.x;
+                    curEventInfo.OutPosition[i] = pos;
                 }
             }
             else if (evt.functionName == "DribbleIn")
@@ -90,7 +97,8 @@ public static class DribbleSimSampler
 
                 Hand hand;
                 DribbleSimulator.TryParseInInfo(evt.stringParameter, out hand);
-                curEventInfo.InHand = hand;
+                curEventInfo.InHand = clipSettings.mirror ? DribbleSimulator.MirrorHand(hand) : hand;
+                //curEventInfo.InHand = hand;
                 curEventInfo.InTime = evt.time;
                 curEventInfo.InNormalizedTime = evt.time / clip.length;
 
@@ -116,7 +124,10 @@ public static class DribbleSimSampler
                         return null;
                     }
 
-                    curEventInfo.InPosition[i] = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                    Vector3 pos = (hand == Hand.Left ? leftBall.position : rightBall.position);
+                    if (clipSettings.mirror)
+                        pos.x = -pos.x;
+                    curEventInfo.InPosition[i] = pos;
                 }
 
                 clipInfo.Entries.Add(curEventInfo);

@@ -18,19 +18,27 @@ public class TargetMatching : MonoBehaviour
     void Start()
     {
         mData = Resources.Load<TargetMatchingData>("Data/TargetMatching");
-        Debug.Assert(mData != null);
+        Debug.Assert(mData != null, "Can't load target matching data.");
     }
 
     void StartMatching()
     {
         if (!enabled)
             return;
-        AnimatorStateInfo curInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
-        var clipMatchingData = mData.Clips.Find(i => i.NameHash == curInfo.shortNameHash);
-        Debug.AssertFormat(clipMatchingData != null, "Can't find target matching clip info");
+        //Debug.AssertFormat(!mAnimator.IsInTransition(0), "Can't start target matching while in transition.");
+        
+        AnimatorStateInfo stateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
+        var clipMatchingData = mData.Clips.Find(i => i.NameHash == stateInfo.shortNameHash);
+        if (clipMatchingData == null)
+        {
+            stateInfo = mAnimator.GetNextAnimatorStateInfo(0);
+            clipMatchingData = mData.Clips.Find(i => i.NameHash == stateInfo.shortNameHash);
+        }
+        Debug.AssertFormat(clipMatchingData != null, "Can't find target matching clip info. NameHash:{0}\n{1}",
+            stateInfo.shortNameHash, mData);
 
-        var entry = clipMatchingData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - curInfo.normalizedTime) < 0.01f);
-        Debug.Assert(entry != null);
+        var entry = clipMatchingData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - stateInfo.normalizedTime) < 0.01f);
+        Debug.AssertFormat(entry != null, "Can't find entry. NorTime:{0} Data:{1}", stateInfo.normalizedTime, clipMatchingData);
 
         Vector3 movement = entry.TargetPosition[(int)BodyType.Char1_Thin] - entry.StartPosition[(int)BodyType.Char1_Thin];
         Vector3 dir = movement.normalized;
@@ -49,15 +57,23 @@ public class TargetMatching : MonoBehaviour
 
     public Vector3 GetAdjust(int clipNameHash, float normalizedTime)
     {
-        if (!enabled)
-            return Vector3.zero;
-        var clipData = mData.Clips.Find(c => c.NameHash == clipNameHash);
-        var entry = clipData.Entries.Find(e => normalizedTime > e.StartNormalizedTime);
-        Vector3 totalAdjust = entry.TargetPosition[(int)BodyType.Char1_Thin] -
-            Vector3.Scale(entry.TargetPosition[(int)mBodyType], transform.localScale);
-        float t = (normalizedTime - entry.StartNormalizedTime) / 
-            (entry.TargetNormalizedTime - entry.StartNormalizedTime);
-        Vector3 adjust = Vector3.Scale(totalAdjust * t, entry.PositionWeight);
+        Vector3 adjust = Vector3.zero;
+        if (enabled)
+        {
+            var clipData = mData.Clips.Find(c => c.NameHash == clipNameHash);
+            if (clipData != null)
+            {
+                var entry = clipData.Entries.Find(e => normalizedTime > e.StartNormalizedTime);
+                if (entry != null)
+                {
+                    Vector3 totalAdjust = entry.TargetPosition[(int)BodyType.Char1_Thin] -
+                        Vector3.Scale(entry.TargetPosition[(int)mBodyType], transform.localScale);
+                    float t = (normalizedTime - entry.StartNormalizedTime) /
+                        (entry.TargetNormalizedTime - entry.StartNormalizedTime);
+                    adjust = Vector3.Scale(totalAdjust * t, entry.PositionWeight);
+                }
+            }
+        }
         return adjust;
     }
 }
