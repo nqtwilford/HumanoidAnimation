@@ -25,20 +25,24 @@ public class TargetMatching : MonoBehaviour
     {
         if (!enabled)
             return;
-        //Debug.AssertFormat(!mAnimator.IsInTransition(0), "Can't start target matching while in transition.");
-        
-        AnimatorStateInfo stateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
-        var clipMatchingData = mData.Clips.Find(i => i.NameHash == stateInfo.shortNameHash);
-        if (clipMatchingData == null)
+        AnimatorStateInfo curStateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo nextStateInfo = mAnimator.GetNextAnimatorStateInfo(0);
+        if (mAnimator.IsInTransition(0))
         {
-            stateInfo = mAnimator.GetNextAnimatorStateInfo(0);
-            clipMatchingData = mData.Clips.Find(i => i.NameHash == stateInfo.shortNameHash);
+            Debug.LogErrorFormat("Can't start target matching while in transition.\n" +
+                "CurState:{0} {1} NextState:{2} {3} Data:\n{4}",
+                curStateInfo.shortNameHash, curStateInfo.normalizedTime,
+                nextStateInfo.shortNameHash, nextStateInfo.normalizedTime, mData);
+            return;
         }
-        Debug.AssertFormat(clipMatchingData != null, "Can't find target matching clip info. NameHash:{0}\n{1}",
+        
+        AnimatorStateInfo stateInfo = curStateInfo;
+        var clipData = mData.Clips.Find(c => c.NameHash == stateInfo.shortNameHash);
+        Debug.AssertFormat(clipData != null, "Can't find target matching clip info. NameHash:{0}\n{1}",
             stateInfo.shortNameHash, mData);
 
-        var entry = clipMatchingData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - stateInfo.normalizedTime) < 0.01f);
-        Debug.AssertFormat(entry != null, "Can't find entry. NorTime:{0} Data:{1}", stateInfo.normalizedTime, clipMatchingData);
+        var entry = clipData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - stateInfo.normalizedTime) < 0.01f);
+        Debug.AssertFormat(entry != null, "Can't find entry. NorTime:{0} Data:{1}", stateInfo.normalizedTime, clipData);
 
         Vector3 movement = entry.TargetPosition[(int)BodyType.Char1_Thin] - entry.StartPosition[(int)BodyType.Char1_Thin];
         Vector3 dir = movement.normalized;

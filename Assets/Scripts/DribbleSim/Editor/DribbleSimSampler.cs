@@ -3,10 +3,7 @@ using UnityEditor;
 
 public static class DribbleSimSampler
 {
-    public const string NODE_PATH_LEFT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/Leftball";
-    public const string NODE_PATH_RIGHT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/Rightball";
-
-    public static void Sample(GameObject[] bodies, AnimationClip[] clips)
+    public static DribbleData Sample(GameObject[] bodies, AnimationClip[] clips)
     {
         string filename = "Assets/Resources/Data/Dribble.asset";
         DribbleData data = AssetDatabase.LoadAssetAtPath<DribbleData>(filename);
@@ -26,7 +23,7 @@ public static class DribbleSimSampler
 
         EditorUtility.SetDirty(data);
 
-        Debug.LogFormat("Dribble simulation data exported.\n{0}", data);
+        return data;
     }
 
     public static DribbleData.Clip Sample(GameObject[] bodies, AnimationClip clip)
@@ -59,6 +56,7 @@ public static class DribbleSimSampler
                     //OutHand = hand,
                 };
 
+                /*
                 for (int i = 0; i < (int)BodyType.Count; ++i)
                 {
                     GameObject body = bodies[i];
@@ -68,13 +66,13 @@ public static class DribbleSimSampler
                     AnimationMode.SampleAnimationClip(body, clip, evt.time);
                     AnimationMode.EndSampling();
 
-                    Transform leftBall = body.transform.Find(NODE_PATH_LEFT_BALL);
+                    Transform leftBall = body.transform.Find(Utils.NODE_PATH_LEFT_BALL);
                     if (leftBall == null)
                     {
                         Debug.LogErrorFormat("GameObject: {0} has no bone Leftball.", body.name);
                         return null;
                     }
-                    Transform rightBall = body.transform.Find(NODE_PATH_RIGHT_BALL);
+                    Transform rightBall = body.transform.Find(Utils.NODE_PATH_RIGHT_BALL);
                     if (rightBall == null)
                     {
                         Debug.LogErrorFormat("GameObject: {0} has no bone Rightball.", body.name);
@@ -86,6 +84,7 @@ public static class DribbleSimSampler
                         pos.x = -pos.x;
                     curEventInfo.OutPosition[i] = pos;
                 }
+                */
             }
             else if (evt.functionName == "DribbleIn")
             {
@@ -102,6 +101,7 @@ public static class DribbleSimSampler
                 curEventInfo.InTime = evt.time;
                 curEventInfo.InNormalizedTime = evt.time / clip.length;
 
+                /*
                 for (int i = 0; i < (int)BodyType.Count; ++i)
                 {
                     GameObject body = bodies[i];
@@ -111,13 +111,13 @@ public static class DribbleSimSampler
                     AnimationMode.SampleAnimationClip(body, clip, evt.time);
                     AnimationMode.EndSampling();
 
-                    Transform leftBall = body.transform.Find(NODE_PATH_LEFT_BALL);
+                    Transform leftBall = body.transform.Find(Utils.NODE_PATH_LEFT_BALL);
                     if (leftBall == null)
                     {
                         Debug.LogErrorFormat("GameObject: {0} has no bone Leftball.", body.name);
                         return null;
                     }
-                    Transform rightBall = body.transform.Find(NODE_PATH_RIGHT_BALL);
+                    Transform rightBall = body.transform.Find(Utils.NODE_PATH_RIGHT_BALL);
                     if (rightBall == null)
                     {
                         Debug.LogErrorFormat("GameObject: {0} has no bone Rightball.", body.name);
@@ -129,6 +129,7 @@ public static class DribbleSimSampler
                         pos.x = -pos.x;
                     curEventInfo.InPosition[i] = pos;
                 }
+                */
 
                 clipInfo.Entries.Add(curEventInfo);
                 curEventInfo = null;

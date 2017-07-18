@@ -12,6 +12,9 @@ public enum BodyType
 
 public static class Utils
 {
+    public const string NODE_PATH_LEFT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/Leftball";
+    public const string NODE_PATH_RIGHT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/Rightball";
+
     public static void DrawPoint(string name, Vector3 position, Color color)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);

@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Animator), typeof(DribbleSimulator))]
 public class TestMecAnim : MonoBehaviour
 {
     Animator mAnimator;
     DribbleSimulator mDribbleSim;
-    Vector3 mInitialPos;
+    //Vector3 mInitialPos;
 
     void Awake()
     {
-        mInitialPos = transform.position;
+        //mInitialPos = transform.position;
         transform.Find("BallGeo").gameObject.SetActive(false);
         transform.Find("BallGeoL").gameObject.SetActive(false);
         transform.Find("BallGeoR").gameObject.SetActive(false);
@@ -25,32 +26,68 @@ public class TestMecAnim : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.J))
         {
-            transform.position = mInitialPos;
-            mAnimator.Play("None", 0, 0);
+            StartCoroutine(Shoot());
         }
-        if (Input.GetKeyUp(KeyCode.Space))
+        else if (Input.GetKeyUp(KeyCode.U))
         {
-            mDribbleSim.State = DribbleState.InHand;
-            if (!mDribbleSim.mMirror)
-            {
-                mDribbleSim.Hand = Hand.Right;
-                mAnimator.SetBool("mirror", false);
-            }
-            else
-            {
-                mDribbleSim.Hand = Hand.Left;
-                mAnimator.SetBool("mirror", true);
-            }
-            //mAnimator.CrossFade("spinmove", 0.2f, 0, -0.2f);
-            mAnimator.Play("spinmove", 0);
-            //mAnimator.SetTrigger("cross_over");
+            StartCoroutine(Dunk());
         }
+        else if (Input.GetKeyUp(KeyCode.I))
+        {
+            StartCoroutine(CrossOver());
+        }
+        else if (Input.GetKeyUp(KeyCode.K))
+        {
+            StartCoroutine(Pass());
+        }
+        /*
         var transInfo = mAnimator.GetAnimatorTransitionInfo(0);
         if (transInfo.normalizedTime > 0 && transInfo.normalizedTime <= 1)
         {
             Debug.LogFormat("Transition normalized time:{0}", transInfo.normalizedTime);
         }
+        */
+    }
+
+    IEnumerator CrossOver()
+    {
+        while (mDribbleSim.State != DribbleState.InHand)
+            yield return null;
+        if (!mDribbleSim.mMirror)
+        {
+            mDribbleSim.Hand = Hand.Right;
+            mAnimator.SetBool("mirror", false);
+        }
+        else
+        {
+            mDribbleSim.Hand = Hand.Left;
+            mAnimator.SetBool("mirror", true);
+        }
+        //mAnimator.CrossFade("spinmove", 0.2f, 0, -0.2f);
+        //mAnimator.Play("spinmove", 0);
+        mAnimator.SetTrigger("cross_over");
+    }
+
+    IEnumerator Pass()
+    {
+        while (mDribbleSim.State != DribbleState.InHand)
+            yield return null;
+        mAnimator.SetTrigger("pass");
+    }
+
+    IEnumerator Shoot()
+    {
+        while (mDribbleSim.State != DribbleState.InHand)
+            yield return null;
+        mAnimator.SetTrigger("shoot");
+    }
+
+    IEnumerator Dunk()
+    {
+        while (mDribbleSim.State != DribbleState.InHand)
+            yield return null;
+        mAnimator.SetTrigger("dunk");
     }
 }

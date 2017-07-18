@@ -241,6 +241,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.05345308
+        functionName: StartMatching
+        data: Root, 1, 0, 1
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.20401034
         functionName: DribbleIn
         data: Right
@@ -265,13 +272,6 @@ ModelImporter:
       - time: 0.99605405
         functionName: EndMatching
         data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.0041777184
-        functionName: StartMatching
-        data: Root, 1, 0, 1
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0

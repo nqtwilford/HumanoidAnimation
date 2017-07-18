@@ -1,67 +1,162 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEditor.Animations;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class AnimationExporter// : AssetPostprocessor
+public class AnimationExporter : EditorWindow
 {
-    /*
-    void OnPostprocessModel(GameObject go)
+    string mCurScenePath;
+    GameObject[] mBodies;
+    bool mSamplingCompleted;
+
+    [MenuItem("Animation/Export #&m")]
+    static void ShowWindow()
     {
-        Debug.LogFormat("OnPostprocessModel: {0}", go.name);
-        ModelImporter importer = AssetImporter.GetAtPath(assetPath) as ModelImporter;
-        foreach (var clip in importer.clipAnimations)
+        if (EditorApplication.isPlaying)
+            return;
+        GetWindow<AnimationExporter>(true);
+    }
+
+    void Awake()
+    {
+        ExportAll();
+    }
+
+    void OnGUI()
+    {
+        GUILayout.Label("采样过程中，请勿关闭此窗口，不要有任何动作！！！");
+        if (GUILayout.Button("如果发生异常，点我手动退出采样"))
         {
-            Debug.LogFormat("AnimationClip: {0}", clip.name);
-            foreach (var evt in clip.events)
-            {
-                Debug.LogFormat("evt: {0} {1} {2}", evt.functionName, evt.stringParameter, evt.time);
-            }
+            EditorSceneManager.OpenScene(mCurScenePath, OpenSceneMode.Single);
+            Close();
         }
+    }
+
+    /*
+    void OnEnable()
+    {
+        Debug.LogFormat("OnEnable, {0} {1} {2}",
+            EditorApplication.isPlaying,
+            EditorApplication.isPlayingOrWillChangePlaymode,
+            mBodies);
+    }
+
+    void OnDisable()
+    {
+        Debug.LogFormat("OnDisable, {0} {1} {2}",
+            EditorApplication.isPlaying,
+            EditorApplication.isPlayingOrWillChangePlaymode,
+            mBodies);
     }
     */
 
-    [MenuItem("Animation/Export")]
-    static void ExportAll()
+    void Update()
     {
-        AnimationMode.StartAnimationMode();
-        GameObject[] bodies = new GameObject[(int)BodyType.Count];
+        if (mBodies != null)
+        {
+            int completedCount = 0;
+            foreach (GameObject body in mBodies)
+            {
+                var sampler = body.GetComponent<RuntimeSampleController>();
+                if (sampler.IsCompleted)
+                    ++completedCount;
+            }
+            if (completedCount == mBodies.Length)
+                EndSampling();
+        }
+        if (mSamplingCompleted && !EditorApplication.isPlaying)
+        {
+            EditorSceneManager.OpenScene(mCurScenePath, OpenSceneMode.Single);
+            Close();
+            Debug.Log("采样完成！！！");
+        }
+    }
+
+    void ExportAll()
+    {
+        mSamplingCompleted = false;
+        mCurScenePath = SceneManager.GetActiveScene().path;
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+        mBodies = new GameObject[(int)BodyType.Count];
         try
         {
-            var controller = Resources.Load<RuntimeAnimatorController>("Controllers/All");
+            AnimationMode.StartAnimationMode();
+            var controller = CreateSampleAnimatorController();
             for (int i = 0; i < (int)BodyType.Count; ++i)
             {
                 GameObject prefab = Resources.Load<GameObject>("FBX/Bodies/" + (BodyType)i);
-                GameObject inst = Object.Instantiate(prefab);
+                GameObject inst = Instantiate(prefab);
                 inst.name = prefab.name;
-                inst.hideFlags = HideFlags.HideAndDontSave;
+                //inst.hideFlags = HideFlags.HideAndDontSave;
                 inst.transform.position = Vector3.zero;
                 inst.transform.forward = Vector3.forward;
                 Animator animator = inst.GetComponent<Animator>();
                 if (animator == null)
                     animator = inst.AddComponent<Animator>();
                 animator.runtimeAnimatorController = controller;
-                bodies[i] = inst;
+                animator.applyRootMotion = true;
+                mBodies[i] = inst;
             }
 
-            //var ctrl = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>("Assets/Resources/Controllers/All.controller");
+            DribbleData dribbleData = DribbleSimSampler.Sample(mBodies, controller.animationClips);
+            TargetMatchingSampler.Sample(mBodies, controller.animationClips);
 
-            DribbleSimSampler.Sample(bodies, controller.animationClips);
-            TargetMatchingSampler.Sample(bodies, controller.animationClips);
+            AnimationMode.StopAnimationMode();
+
+            // Runtime sampling
+            for (int i = 0; i < (int)BodyType.Count; ++i)
+            {
+                GameObject inst = mBodies[i];
+                inst.AddComponent<RuntimeSampleController>();
+                var sampler = inst.AddComponent<DribbleSimRuntimeSampler>();
+                sampler.BodyType = (BodyType)i;
+                sampler.Data = dribbleData;
+                var sampler1 = inst.AddComponent<MovingSpeedRuntimeSampler>();
+                sampler1.BodyType = (BodyType)i;
+            }
+            EditorApplication.isPlaying = true;
         }
         catch (System.Exception ex)
         {
-            Debug.LogFormat("ex:{0}", ex);
-        }
-        finally
-        {
+            Debug.LogErrorFormat("ex:{0}", ex);
             for (int i = 0; i < (int)BodyType.Count; ++i)
             {
-                GameObject inst = bodies[i];
+                GameObject inst = mBodies[i];
                 if (inst != null)
-                    Object.DestroyImmediate(inst);
+                    DestroyImmediate(inst);
             }
             AnimationMode.StopAnimationMode();
-            AssetDatabase.SaveAssets();
+            EditorSceneManager.OpenScene(mCurScenePath, OpenSceneMode.Single);
+            Close();
         }
+    }
 
+    AnimatorController CreateSampleAnimatorController()
+    {
+        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/");
+        AnimatorController ctrl = AnimatorController.CreateAnimatorControllerAtPath(
+            "Assets/Resources/Controllers/Sample.controller");
+        ctrl.layers[0].stateMachine.AddState("None");
+        foreach (AnimationClip clip in clips)
+        {
+            ctrl.AddMotion(clip);
+        }
+        return ctrl;
+    }
+
+    void EndSampling()
+    {
+        for (int i = 0; i < (int)BodyType.Count; ++i)
+        {
+            GameObject inst = mBodies[i];
+            if (inst != null)
+                DestroyImmediate(inst);
+        }
+        mBodies = null;
+        AssetDatabase.SaveAssets();
+        EditorApplication.isPlaying = false;
+        mSamplingCompleted = true;
     }
 }

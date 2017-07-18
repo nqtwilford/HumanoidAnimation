@@ -25,8 +25,6 @@ public static class TargetMatchingSampler
         }
 
         EditorUtility.SetDirty(data);
-
-        Debug.LogFormat("Target matching data exported.\n{0}", data);
     }
 
     public static TargetMatchingData.Clip Sample(GameObject[] bodies, AnimationClip clip)
