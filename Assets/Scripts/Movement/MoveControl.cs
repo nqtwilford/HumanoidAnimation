@@ -4,8 +4,8 @@
 public class MoveControl : MonoBehaviour
 {
     const float TURN_SPEED = 0.08f;
-    const float MAX_SPEED = 5f;
-    const float ACCELERATION = 5f;
+    public const float MAX_SPEED = 4.9f;
+    const float ACCELERATION = 10f;
 
     public float Speed
     {

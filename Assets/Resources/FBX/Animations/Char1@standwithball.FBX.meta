@@ -233,14 +233,14 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.2958886
+      - time: 0.24661323
         functionName: DribbleOut
         data: 0, Right
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.55925053
+      - time: 0.61184776
         functionName: DribbleIn
         data: Right
         objectReferenceParameter: {instanceID: 0}

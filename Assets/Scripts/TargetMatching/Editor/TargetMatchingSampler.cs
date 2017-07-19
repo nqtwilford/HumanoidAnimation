@@ -14,14 +14,14 @@ public static class TargetMatchingSampler
             data = ScriptableObject.CreateInstance<TargetMatchingData>();
             AssetDatabase.CreateAsset(data, filename);
         }
-        data.Clips.Clear();
+        data.Clear();
 
         foreach (var clip in clips)
         {
             //Debug.LogFormat("导出TargetMatching数据，{0}", clip.name);
             TargetMatchingData.Clip clipInfo = Sample(bodies, clip);
             if (clipInfo != null)
-                data.Clips.Add(clipInfo);
+                data.AddClipData(clipInfo);
         }
 
         EditorUtility.SetDirty(data);

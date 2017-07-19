@@ -11,9 +11,15 @@ public class TestMecAnim : MonoBehaviour
     void Awake()
     {
         //mInitialPos = transform.position;
-        transform.Find("BallGeo").gameObject.SetActive(false);
-        transform.Find("BallGeoL").gameObject.SetActive(false);
-        transform.Find("BallGeoR").gameObject.SetActive(false);
+        Transform trans = transform.Find("BallGeo");
+        if (trans != null)
+            trans.gameObject.SetActive(false);
+        trans = transform.Find("BallGeoL");
+        if (trans != null)
+            trans.gameObject.SetActive(false);
+        trans = transform.Find("BallGeoR");
+        if (trans != null)
+            trans.gameObject.SetActive(false);
         mAnimator = GetComponent<Animator>();
         mDribbleSim = GetComponent<DribbleSimulator>();
     }
@@ -49,6 +55,16 @@ public class TestMecAnim : MonoBehaviour
             Debug.LogFormat("Transition normalized time:{0}", transInfo.normalizedTime);
         }
         */
+        if (Input.GetKeyUp(KeyCode.C))
+            ClearConsole();
+    }
+
+    void ClearConsole()
+    {
+        var assembly = System.Reflection.Assembly.GetAssembly(typeof(UnityEditor.ActiveEditorTracker));
+        var type = assembly.GetType("UnityEditorInternal.LogEntries");
+        var method = type.GetMethod("Clear");
+        method.Invoke(new object(), null);
     }
 
     IEnumerator CrossOver()

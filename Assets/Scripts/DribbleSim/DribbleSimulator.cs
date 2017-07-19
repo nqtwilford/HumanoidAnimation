@@ -91,12 +91,6 @@ public class DribbleSimulator : MonoBehaviour
 
     void Update()
     {
-        if (mReattachBall)
-        {
-            ReattachBall();
-            mReattachBall = false;
-        }
-
         if (State == DribbleState.Dribbling)
         {
             var curStateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
@@ -124,6 +118,15 @@ public class DribbleSimulator : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (mReattachBall)
+        {
+            ReattachBall();
+            mReattachBall = false;
+        }
+    }
+
     void ReattachBall()
     {
         if (mState == DribbleState.None)
@@ -136,7 +139,7 @@ public class DribbleSimulator : MonoBehaviour
         else if (mState == DribbleState.Dribbling)
         {
             mBall.SetParent(transform, true);
-            mBall.localScale = Vector3.one / 5 / transform.localScale.y;
+            mBall.localScale = Vector3.one / 5 / transform.localScale.y * 1.25f;
             //mBall.SetParent(null, true);
             //mBall.localScale = Vector3.one / 5;
         }
@@ -144,7 +147,7 @@ public class DribbleSimulator : MonoBehaviour
         {
             Debug.AssertFormat(mBall != null, "No ball when setting dribble state to InHand.");
             mBall.SetParent(mHands[(int)Hand], false);
-            mBall.localScale = Vector3.one / 5 / transform.localScale.y;
+            mBall.localScale = Vector3.one / 5 / transform.localScale.y * 1.25f;
             mBall.localPosition = Vector3.zero;
         }
     }
@@ -164,8 +167,6 @@ public class DribbleSimulator : MonoBehaviour
             curStateInfo.shortNameHash, curStateInfo.normalizedTime, 
             nextStateInfo.shortNameHash, nextStateInfo.normalizedTime, mData);
 
-        //float playSpeed = stateInfo.speed * stateInfo.speedMultiplier;
-
         //Vector3 targetMatchingAdjustOut = Vector3.zero;
         //Vector3 targetMatchingAdjustIn = Vector3.zero;
         //if (mTargetMatching != null)
@@ -174,7 +175,10 @@ public class DribbleSimulator : MonoBehaviour
         //    targetMatchingAdjustIn = mTargetMatching.GetAdjust(stateInfo.shortNameHash, entry.InNormalizedTime);
         //}
 
-        float time = (entry.InTime - entry.OutTime);
+        float normalizedTime = stateInfo.normalizedTime;
+        if (stateInfo.loop)
+            normalizedTime = Mathf.Repeat(stateInfo.normalizedTime, 1);
+        float time = (entry.InTime - normalizedTime);
         Vector3 outPos = entry.OutPosition[(int)mBodyType];// + targetMatchingAdjustOut;
         Vector3 inPos = entry.InPosition[(int)mBodyType];// + targetMatchingAdjustIn;
         if (mMirror)
@@ -220,7 +224,7 @@ public class DribbleSimulator : MonoBehaviour
         else
             Hand = hand;
 
-        //Utils.DrawPoint("InPos", transform.TransformPoint(mInPos), Color.blue);
+        //Utils.DrawPoint("InPos", transform.TransformPoint(mCurDataEntry.InPosition[(int)BodyType]), Color.blue);
         ////Utils.DrawPoint("InPos", mInPos, Color.blue);
         //Debug.Break();
     }
@@ -229,13 +233,13 @@ public class DribbleSimulator : MonoBehaviour
     {
         if (stateInfo.shortNameHash != 0)
         {
-            var clipInfo = mData.Clips.Find(ci => ci.NameHash == stateInfo.shortNameHash);
+            var clipInfo = mData.GetClipData(stateInfo.shortNameHash);
             if (clipInfo != null)
             {
                 float normalizedTime = stateInfo.normalizedTime;
                 if (stateInfo.loop)
                     normalizedTime = Mathf.Repeat(stateInfo.normalizedTime, 1);
-                var entry = clipInfo.Entries.Find(ei => Mathf.Abs(normalizedTime - ei.OutNormalizedTime) < 0.02f);
+                var entry = clipInfo.GetEntry(normalizedTime);
                 return entry;
             }
         }

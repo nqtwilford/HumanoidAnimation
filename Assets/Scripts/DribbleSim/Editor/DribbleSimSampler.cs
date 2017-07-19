@@ -12,13 +12,13 @@ public static class DribbleSimSampler
             data = ScriptableObject.CreateInstance<DribbleData>();
             AssetDatabase.CreateAsset(data, filename);
         }
-        data.Clips.Clear();
+        data.Clear();
 
         foreach (var clip in clips)
         {
             //Debug.LogFormat("导出运球数据，Clip: {0}", clip.name);
             var clipInfo = Sample(bodies, clip);
-            data.Clips.Add(clipInfo);
+            data.AddClipData(clipInfo);
         }
 
         EditorUtility.SetDirty(data);
@@ -131,7 +131,7 @@ public static class DribbleSimSampler
                 }
                 */
 
-                clipInfo.Entries.Add(curEventInfo);
+                clipInfo.AddEntry(curEventInfo);
                 curEventInfo = null;
             }
             //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);

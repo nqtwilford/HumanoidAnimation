@@ -40,13 +40,34 @@ public class TargetMatchingData : ScriptableObject
         }
     }
 
-    public List<Clip> Clips = new List<Clip>();
+    [SerializeField]
+    private List<Clip> mClips = new List<Clip>();
+
+    public Clip GetClipData(int nameHash)
+    {
+        return mClips.Find(c => c.NameHash == nameHash);
+    }
+
+    public Clip GetClipData(string clipName)
+    {
+        return mClips.Find(c => c.ClipName == clipName);
+    }
+
+    public void AddClipData(Clip clipData)
+    {
+        mClips.Add(clipData);
+    }
+
+    public void Clear()
+    {
+        mClips.Clear();
+    }
 
     public override string ToString()
     {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Target Matching Data:");
-        foreach (Clip clip in Clips)
+        foreach (Clip clip in mClips)
             builder.AppendLine(clip.ToString());
         return builder.ToString();
     }

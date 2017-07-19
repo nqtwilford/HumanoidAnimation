@@ -3,10 +3,12 @@
 public enum BodyType
 {
     Char1_Thin,
+#if !DEBUG_SAMPLE
     Char2_Fat,
     Char3_Tall,
     Char4_Short,
-
+    Tang,
+#endif
     Count,
 }
 

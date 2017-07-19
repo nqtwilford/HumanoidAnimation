@@ -4,14 +4,12 @@ public class StateBehaviour : StateMachineBehaviour
 {
     MovingData mData;
     int mHashRun;
-    int mHashStand;
 
     void Awake()
     {
         mData = Resources.Load<MovingData>("Data/MovingSpeed");
         //Debug.LogFormat("Moving data:\n{0}", mData);
         mHashRun = Animator.StringToHash("run");
-        mHashStand = Animator.StringToHash("standwithball");
     }
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -51,8 +49,9 @@ public class StateBehaviour : StateMachineBehaviour
         if (clipData != null)
         {
             float actionSpeed = clipData.MovingSpeed[(int)bodyType];
-            float moveSpeed = animator.GetComponent<MoveControl>().Speed;
-            if (moveSpeed >= 3f)
+            MoveControl moveControl = animator.GetComponent<MoveControl>();
+            float moveSpeed = moveControl.Speed;
+            if (moveSpeed >= MoveControl.MAX_SPEED)
             {
                 float speedMultiplier = moveSpeed / actionSpeed;
                 animator.SetFloat("speed_multiplier", speedMultiplier);

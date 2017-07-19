@@ -97,6 +97,7 @@ public class AnimationExporter : EditorWindow
                     animator = inst.AddComponent<Animator>();
                 animator.runtimeAnimatorController = controller;
                 animator.applyRootMotion = true;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 mBodies[i] = inst;
             }
 
@@ -135,7 +136,11 @@ public class AnimationExporter : EditorWindow
 
     AnimatorController CreateSampleAnimatorController()
     {
+#if DEBUG_SAMPLE
+        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/Char1@run");
+#else
         AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/");
+#endif
         AnimatorController ctrl = AnimatorController.CreateAnimatorControllerAtPath(
             "Assets/Resources/Controllers/Sample.controller");
         ctrl.layers[0].stateMachine.AddState("None");

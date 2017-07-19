@@ -1,0 +1,269 @@
+fileFormatVersion: 2
+guid: 2dca942143f3b3f459f015583a7d999f
+timeCreated: 1500450671
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Ball
+    100002: BallGeo
+    100004: BallGeoL
+    100006: BallGeoR
+    100008: Bip001
+    100010: Bip001 Footsteps
+    100012: Bip001 L Finger2Nub
+    100014: Bip001 L Finger3Nub
+    100016: Bip001 L Finger4Nub
+    100018: Bip001 R Finger2Nub
+    100020: Bip001 R Finger3Nub
+    100022: Bip001 R Finger4Nub
+    100024: body_mod
+    100026: Chest
+    100028: Head
+    100030: HeadNub
+    100032: Hips
+    100034: huju_mod
+    100036: huwan_L
+    100038: huwan_R
+    100040: jiemao1_mod
+    100042: L Finger0Nub
+    100044: L Finger1Nub
+    100046: L Toe0Nub
+    100048: LeftArm
+    100050: Leftball
+    100052: LeftFoot
+    100054: LeftForeArm
+    100056: LeftHand
+    100058: LeftHandIndex1
+    100060: LeftHandIndex2
+    100062: LeftHandLittle1
+    100064: LeftHandLittle2
+    100066: LeftHandMiddle1
+    100068: LeftHandMiddle2
+    100070: LeftHandRing1
+    100072: LeftHandRing2
+    100074: LeftHandThumb1
+    100076: LeftHandThumb2
+    100078: LeftLeg
+    100080: LeftShoulder
+    100082: LeftToe
+    100084: LeftUpLeg
+    100086: maozi_mod
+    100088: meimao_L_mod
+    100090: Neck
+    100092: neiyi_mod
+    100094: R Finger0Nub
+    100096: R Finger1Nub
+    100098: R Toe0Nub
+    100100: RightArm
+    100102: Rightball
+    100104: RightFoot
+    100106: RightForeArm
+    100108: RightHand
+    100110: RightHandIndex1
+    100112: RightHandIndex2
+    100114: RightHandLittle1
+    100116: RightHandLittle2
+    100118: RightHandMiddle1
+    100120: RightHandMiddle2
+    100122: RightHandRing1
+    100124: RightHandRing2
+    100126: RightHandThumb1
+    100128: RightHandThumb2
+    100130: RightLeg
+    100132: RightShoulder
+    100134: RightToe
+    100136: RightUpLeg
+    100138: Root
+    100140: Spine
+    100142: Spine1
+    100144: toufa
+    100146: //RootNode
+    100148: xiedai2_L_mod
+    100150: xiezi1_mod
+    100152: xiezi2_mod
+    100154: yanjing
+    100156: yifu_mod
+    400000: Ball
+    400002: BallGeo
+    400004: BallGeoL
+    400006: BallGeoR
+    400008: Bip001
+    400010: Bip001 Footsteps
+    400012: Bip001 L Finger2Nub
+    400014: Bip001 L Finger3Nub
+    400016: Bip001 L Finger4Nub
+    400018: Bip001 R Finger2Nub
+    400020: Bip001 R Finger3Nub
+    400022: Bip001 R Finger4Nub
+    400024: body_mod
+    400026: Chest
+    400028: Head
+    400030: HeadNub
+    400032: Hips
+    400034: huju_mod
+    400036: huwan_L
+    400038: huwan_R
+    400040: jiemao1_mod
+    400042: L Finger0Nub
+    400044: L Finger1Nub
+    400046: L Toe0Nub
+    400048: LeftArm
+    400050: Leftball
+    400052: LeftFoot
+    400054: LeftForeArm
+    400056: LeftHand
+    400058: LeftHandIndex1
+    400060: LeftHandIndex2
+    400062: LeftHandLittle1
+    400064: LeftHandLittle2
+    400066: LeftHandMiddle1
+    400068: LeftHandMiddle2
+    400070: LeftHandRing1
+    400072: LeftHandRing2
+    400074: LeftHandThumb1
+    400076: LeftHandThumb2
+    400078: LeftLeg
+    400080: LeftShoulder
+    400082: LeftToe
+    400084: LeftUpLeg
+    400086: maozi_mod
+    400088: meimao_L_mod
+    400090: Neck
+    400092: neiyi_mod
+    400094: R Finger0Nub
+    400096: R Finger1Nub
+    400098: R Toe0Nub
+    400100: RightArm
+    400102: Rightball
+    400104: RightFoot
+    400106: RightForeArm
+    400108: RightHand
+    400110: RightHandIndex1
+    400112: RightHandIndex2
+    400114: RightHandLittle1
+    400116: RightHandLittle2
+    400118: RightHandMiddle1
+    400120: RightHandMiddle2
+    400122: RightHandRing1
+    400124: RightHandRing2
+    400126: RightHandThumb1
+    400128: RightHandThumb2
+    400130: RightLeg
+    400132: RightShoulder
+    400134: RightToe
+    400136: RightUpLeg
+    400138: Root
+    400140: Spine
+    400142: Spine1
+    400144: toufa
+    400146: //RootNode
+    400148: xiedai2_L_mod
+    400150: xiezi1_mod
+    400152: xiezi2_mod
+    400154: yanjing
+    400156: yifu_mod
+    4300000: xiedai2_L_mod
+    4300002: jiemao1_mod
+    4300004: xiezi1_mod
+    4300006: xiezi2_mod
+    4300008: yanjing
+    4300010: meimao_L_mod
+    4300012: huwan_R
+    4300014: huwan_L
+    4300016: toufa
+    4300018: maozi_mod
+    4300020: huju_mod
+    4300022: yifu_mod
+    4300024: neiyi_mod
+    4300026: body_mod
+    4300028: BallGeoR
+    4300030: BallGeoL
+    4300032: BallGeo
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: BallGeo
+    13700002: BallGeoL
+    13700004: BallGeoR
+    13700006: body_mod
+    13700008: huju_mod
+    13700010: huwan_L
+    13700012: huwan_R
+    13700014: jiemao1_mod
+    13700016: maozi_mod
+    13700018: meimao_L_mod
+    13700020: neiyi_mod
+    13700022: toufa
+    13700024: xiedai2_L_mod
+    13700026: xiezi1_mod
+    13700028: xiezi2_mod
+    13700030: yanjing
+    13700032: yifu_mod
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

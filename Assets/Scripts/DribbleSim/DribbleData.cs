@@ -32,7 +32,21 @@ public class DribbleData : ScriptableObject
     {
         public int NameHash;
         public string ClipName;
-        public List<Entry> Entries = new List<Entry>();
+
+        [SerializeField]
+        private List<Entry> Entries = new List<Entry>();
+
+        public Entry GetEntry(float outNormalizedTime, float deviation = float.MaxValue)
+        {
+            return Entries.Find(e => e.OutNormalizedTime <= outNormalizedTime && 
+                outNormalizedTime <= e.InNormalizedTime && 
+                Mathf.Abs(outNormalizedTime - e.OutNormalizedTime) <= deviation);
+        }
+
+        public void AddEntry(Entry entry)
+        {
+            Entries.Add(entry);
+        }
 
         public override string ToString()
         {
@@ -44,13 +58,34 @@ public class DribbleData : ScriptableObject
         }
     }
 
-    public List<Clip> Clips = new List<Clip>();
+    [SerializeField]
+    private List<Clip> mClips = new List<Clip>();
+
+    public Clip GetClipData(int nameHash)
+    {
+        return mClips.Find(c => c.NameHash == nameHash);
+    }
+
+    public Clip GetClipData(string clipName)
+    {
+        return mClips.Find(c => c.ClipName == clipName);
+    }
+
+    public void AddClipData(Clip clipData)
+    {
+        mClips.Add(clipData);
+    }
+
+    public void Clear()
+    {
+        mClips.Clear();
+    }
 
     public override string ToString()
     {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Dribble data:");
-        foreach (Clip clip in Clips)
+        foreach (Clip clip in mClips)
             builder.AppendLine(clip.ToString());
         return builder.ToString();
     }

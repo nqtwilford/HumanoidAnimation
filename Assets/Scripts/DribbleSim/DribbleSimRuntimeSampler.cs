@@ -10,6 +10,7 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
 
     Animator mAnimator;
     DribbleData.Clip mCurClipData;
+    DribbleData.Entry mCurEntry;
     Transform[] mBallNodes = new Transform[(int)Hand.Max];
 
     void Awake()
@@ -22,7 +23,7 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
 
     void IRuntimeSampler.OnStartClip(AnimationClip clip)
     {
-        mCurClipData = Data.Clips.Find(c => c.ClipName == clip.name);
+        mCurClipData = Data.GetClipData(clip.name);
         Debug.AssertFormat(mCurClipData != null, "Can't find clip data: {0}", clip.name);
     }
 
@@ -52,15 +53,18 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
         Debug.Assert(mCurClipData != null);
         var curStateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
         Debug.Assert(curStateInfo.shortNameHash == mCurClipData.NameHash);
-        var entry = mCurClipData.Entries.Find(e => Mathf.Abs(curStateInfo.normalizedTime - e.OutNormalizedTime) < 0.02f);
+        var entry = mCurClipData.GetEntry(curStateInfo.normalizedTime, 0.02f);
         Debug.AssertFormat(entry != null, "DribbleSimRuntimeSampler.DribbleOut: Can't find entry.\n" +
             "Clip:{0} State:{1} {2}", mCurClipData, curStateInfo.shortNameHash, curStateInfo.normalizedTime);
         Transform node = mBallNodes[(int)entry.OutHand];
         Vector3 pos = transform.InverseTransformPoint(node.position);
         entry.OutPosition[(int)BodyType] = pos;
-        //Utils.DrawPoint("OutPos" + BodyType + mCurClipData.ClipName, node.position, Color.red);
-        //Debug.LogFormat("OutPos:{0} NorTime:{1} {2}", node.position, curStateInfo.normalizedTime, entry.OutNormalizedTime);
-        //Debug.Break();
+        mCurEntry = entry;
+#if DEBUG_SAMPLE
+        Utils.DrawPoint("OutPos" + BodyType + mCurClipData.ClipName, node.position, Color.red);
+        Debug.LogFormat("OutPos:{0} NorTime:{1} {2}", node.position, curStateInfo.normalizedTime, entry.OutNormalizedTime);
+        Debug.Break();
+#endif
     }
 
     void DribbleIn()
@@ -79,14 +83,16 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
         Debug.Assert(mCurClipData != null);
         var curStateInfo = mAnimator.GetCurrentAnimatorStateInfo(0);
         Debug.Assert(curStateInfo.shortNameHash == mCurClipData.NameHash);
-        var entry = mCurClipData.Entries.Find(e => Mathf.Abs(curStateInfo.normalizedTime - e.InNormalizedTime) < 0.02f);
-        Debug.Assert(entry != null);
-        Transform node = mBallNodes[(int)entry.InHand];
+        Debug.Assert(mCurEntry != null);
+        Debug.Assert(Mathf.Abs(curStateInfo.normalizedTime - mCurEntry.InNormalizedTime) < 0.02f);
+        Transform node = mBallNodes[(int)mCurEntry.InHand];
         Vector3 pos = transform.InverseTransformPoint(node.position);
-        entry.InPosition[(int)BodyType] = pos;
-        //Utils.DrawPoint("InPos" + BodyType + mCurClipData.ClipName, node.position, Color.blue);
-        //Debug.LogFormat("InPos:{0}", node.position);
-        //Debug.Break();
+        mCurEntry.InPosition[(int)BodyType] = pos;
+#if DEBUG_SAMPLE
+        Utils.DrawPoint("InPos" + BodyType + mCurClipData.ClipName, node.position, Color.blue);
+        Debug.LogFormat("InPos:{0}", node.position);
+        Debug.Break();
+#endif
     }
 
     void StartMatching()

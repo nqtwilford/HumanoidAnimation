@@ -37,12 +37,13 @@ public class TargetMatching : MonoBehaviour
         }
         
         AnimatorStateInfo stateInfo = curStateInfo;
-        var clipData = mData.Clips.Find(c => c.NameHash == stateInfo.shortNameHash);
+        var clipData = mData.GetClipData(stateInfo.shortNameHash);
         Debug.AssertFormat(clipData != null, "Can't find target matching clip info. NameHash:{0}\n{1}",
             stateInfo.shortNameHash, mData);
 
-        var entry = clipData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - stateInfo.normalizedTime) < 0.01f);
-        Debug.AssertFormat(entry != null, "Can't find entry. NorTime:{0} Data:{1}", stateInfo.normalizedTime, clipData);
+        var entry = clipData.Entries.Find(e => Mathf.Abs(e.StartNormalizedTime - stateInfo.normalizedTime) < 0.02f);
+        Debug.AssertFormat(entry != null, "TargetMatching:Can't find entry. NorTime:{0} Data:\n{1}",
+            stateInfo.normalizedTime, clipData);
 
         Vector3 movement = entry.TargetPosition[(int)BodyType.Char1_Thin] - entry.StartPosition[(int)BodyType.Char1_Thin];
         Vector3 dir = movement.normalized;
@@ -64,7 +65,7 @@ public class TargetMatching : MonoBehaviour
         Vector3 adjust = Vector3.zero;
         if (enabled)
         {
-            var clipData = mData.Clips.Find(c => c.NameHash == clipNameHash);
+            var clipData = mData.GetClipData(clipNameHash);
             if (clipData != null)
             {
                 var entry = clipData.Entries.Find(e => normalizedTime > e.StartNormalizedTime);
