@@ -35,8 +35,10 @@ public static class DribbleSimSampler
             NameHash = Animator.StringToHash(clip.name),
         };
         DribbleData.Entry curEventInfo = null;
-        foreach (var evt in clip.events)
+        AnimationEvent[] events = AnimationUtility.GetAnimationEvents(clip);
+        for (int i = 0; i < events.Length; ++i)
         {
+            var evt = events[i];
             if (evt.functionName == "DribbleOut")
             {
                 DribbleType type;
@@ -55,6 +57,7 @@ public static class DribbleSimSampler
                     OutHand = clipSettings.mirror ? DribbleSimulator.MirrorHand(hand) : hand,
                     //OutHand = hand,
                 };
+                events[i].messageOptions = SendMessageOptions.DontRequireReceiver;
 
                 /*
                 for (int i = 0; i < (int)BodyType.Count; ++i)
@@ -100,6 +103,7 @@ public static class DribbleSimSampler
                 //curEventInfo.InHand = hand;
                 curEventInfo.InTime = evt.time;
                 curEventInfo.InNormalizedTime = evt.time / clip.length;
+                events[i].messageOptions = SendMessageOptions.DontRequireReceiver;
 
                 /*
                 for (int i = 0; i < (int)BodyType.Count; ++i)
@@ -144,6 +148,8 @@ public static class DribbleSimSampler
             //go.transform.position = rightBall.position;
             //SceneView.RepaintAll();
         }
+        AnimationUtility.SetAnimationEvents(clip, events);
+        EditorUtility.SetDirty(clip);
         return clipInfo;
     }
 }

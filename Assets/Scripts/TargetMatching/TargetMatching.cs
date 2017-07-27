@@ -60,6 +60,10 @@ public class TargetMatching : MonoBehaviour
         */
     }
 
+    void EndMatching()
+    {
+    }
+
     public Vector3 GetAdjust(int clipNameHash, float normalizedTime)
     {
         Vector3 adjust = Vector3.zero;

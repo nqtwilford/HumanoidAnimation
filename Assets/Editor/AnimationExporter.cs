@@ -58,9 +58,12 @@ public class AnimationExporter : EditorWindow
             int completedCount = 0;
             foreach (GameObject body in mBodies)
             {
-                var sampler = body.GetComponent<RuntimeSampleController>();
-                if (sampler.IsCompleted)
-                    ++completedCount;
+                if (body)
+                {
+                    var sampler = body.GetComponent<RuntimeSampleController>();
+                    if (sampler.IsCompleted)
+                        ++completedCount;
+                }
             }
             if (completedCount == mBodies.Length)
                 EndSampling();
@@ -82,6 +85,10 @@ public class AnimationExporter : EditorWindow
         mBodies = new GameObject[(int)BodyType.Count];
         try
         {
+            // Static data exporting
+            AnimatorControllerExporter.Export();
+
+            // Static sampling
             AnimationMode.StartAnimationMode();
             var controller = CreateSampleAnimatorController();
             for (int i = 0; i < (int)BodyType.Count; ++i)
@@ -102,7 +109,7 @@ public class AnimationExporter : EditorWindow
             }
 
             DribbleData dribbleData = DribbleSimSampler.Sample(mBodies, controller.animationClips);
-            TargetMatchingSampler.Sample(mBodies, controller.animationClips);
+            //TargetMatchingSampler.Sample(mBodies, controller.animationClips);
 
             AnimationMode.StopAnimationMode();
 
@@ -137,7 +144,7 @@ public class AnimationExporter : EditorWindow
     AnimatorController CreateSampleAnimatorController()
     {
 #if DEBUG_SAMPLE
-        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/Char1@run");
+        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/Char1@standwithball");
 #else
         AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/");
 #endif

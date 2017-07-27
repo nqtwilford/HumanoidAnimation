@@ -7,15 +7,16 @@ public enum BodyType
     Char2_Fat,
     Char3_Tall,
     Char4_Short,
-    Tang,
 #endif
+    Tang,
+    Hulk,
     Count,
 }
 
 public static class Utils
 {
-    public const string NODE_PATH_LEFT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/LeftShoulder/LeftArm/LeftForeArm/LeftHand/Leftball";
-    public const string NODE_PATH_RIGHT_BALL = "Root/Bip001/Hips/Spine/Spine1/Chest/RightShoulder/RightArm/RightForeArm/RightHand/Rightball";
+    public const string NODE_PATH_LEFT_BALL = "Leftball";
+    public const string NODE_PATH_RIGHT_BALL = "Rightball";
 
     public static void DrawPoint(string name, Vector3 position, Color color)
     {

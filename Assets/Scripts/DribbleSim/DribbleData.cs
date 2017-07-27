@@ -19,6 +19,11 @@ public class DribbleData : ScriptableObject
         public Hand InHand;
         public Vector3[] InPosition = new Vector3[(int)BodyType.Count];
 
+        public bool InPeriod(float normalizedTime)
+        {
+            return OutNormalizedTime <= normalizedTime && normalizedTime <= InNormalizedTime;
+        }
+
         public override string ToString()
         {
             return string.Format("Dribble type:{0} ({1:F4}|{2:F4}|{3}|{4}) -> ({5:F4}|{6:F4}|{7}|{8})",
@@ -34,12 +39,11 @@ public class DribbleData : ScriptableObject
         public string ClipName;
 
         [SerializeField]
-        private List<Entry> Entries = new List<Entry>();
+        public List<Entry> Entries = new List<Entry>();
 
         public Entry GetEntry(float outNormalizedTime, float deviation = float.MaxValue)
         {
-            return Entries.Find(e => e.OutNormalizedTime <= outNormalizedTime && 
-                outNormalizedTime <= e.InNormalizedTime && 
+            return Entries.Find(e => e.InPeriod(outNormalizedTime) && 
                 Mathf.Abs(outNormalizedTime - e.OutNormalizedTime) <= deviation);
         }
 

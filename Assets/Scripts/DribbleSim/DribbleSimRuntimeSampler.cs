@@ -17,8 +17,8 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
     {
         mAnimator = GetComponent<Animator>();
         GetComponent<RuntimeSampleController>().Samplers.Add(this);
-        mBallNodes[(int)Hand.Left] = transform.FindChild(Utils.NODE_PATH_LEFT_BALL);
-        mBallNodes[(int)Hand.Right] = transform.FindChild(Utils.NODE_PATH_RIGHT_BALL);
+        mBallNodes[(int)Hand.Left] = transform.Find(Utils.NODE_PATH_LEFT_BALL);
+        mBallNodes[(int)Hand.Right] = transform.Find(Utils.NODE_PATH_RIGHT_BALL);
     }
 
     void IRuntimeSampler.OnStartClip(AnimationClip clip)
@@ -96,6 +96,10 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
     }
 
     void StartMatching()
+    {
+    }
+
+    void EndMatching()
     {
     }
 }

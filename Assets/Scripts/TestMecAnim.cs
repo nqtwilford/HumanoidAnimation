@@ -106,4 +106,12 @@ public class TestMecAnim : MonoBehaviour
             yield return null;
         mAnimator.SetTrigger("dunk");
     }
+
+    void OnGUI()
+    {
+        GUILayout.BeginHorizontal();
+        Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 1f, GUILayout.Width(500));
+        GUILayout.Label(Time.timeScale.ToString("F3"));
+        GUILayout.EndHorizontal();
+    }
 }
