@@ -3,9 +3,9 @@
 [RequireComponent(typeof(Animator))]
 public class MoveControl : MonoBehaviour
 {
-    const float TURN_SPEED = 0.08f;
+    const float TURN_SPEED = 5f;
     public const float MAX_SPEED = 2.8f;
-    const float ACCELERATION = 20f;
+    const float ACCELERATION = 2000f;
 
     public float Speed
     {
@@ -41,6 +41,8 @@ public class MoveControl : MonoBehaviour
 
     Animator mAnimator;
 
+    public float h, v;
+
     void Awake()
     {
         mAnimator = GetComponent<Animator>();
@@ -60,8 +62,8 @@ public class MoveControl : MonoBehaviour
             pos += mVelocity * Time.deltaTime;
             mPosition = pos;
 
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
             if (Mathf.Approximately(h, 0f) && Mathf.Approximately(v, 0f))
             {
                 Speed = Mathf.Clamp(Speed - ACCELERATION * Time.deltaTime, 0f, MAX_SPEED);
@@ -84,7 +86,7 @@ public class MoveControl : MonoBehaviour
         }
         else
             mPosition = transform.position;
-        transform.forward = Vector3.RotateTowards(transform.forward, mDirection, TURN_SPEED, 0f);
+        transform.forward = Vector3.RotateTowards(transform.forward, mDirection, TURN_SPEED * Time.deltaTime, 0f);
         mPosHolder.position = mPosition;
     }
 }

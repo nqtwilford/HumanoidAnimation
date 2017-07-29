@@ -14,6 +14,8 @@ public class DribbleData : ScriptableObject
         public float OutNormalizedTime;
         public Hand OutHand;
         public Vector3[] OutPosition = new Vector3[(int)BodyType.Count];
+        public float BounceTime;
+        public float BounceNormalizedTime;
         public float InTime;
         public float InNormalizedTime;
         public Hand InHand;

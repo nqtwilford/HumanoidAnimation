@@ -71,16 +71,6 @@ public class TestMecAnim : MonoBehaviour
     {
         while (mDribbleSim.State != DribbleState.InHand)
             yield return null;
-        if (!mDribbleSim.mMirror)
-        {
-            mDribbleSim.Hand = Hand.Right;
-            mAnimator.SetBool("mirror", false);
-        }
-        else
-        {
-            mDribbleSim.Hand = Hand.Left;
-            mAnimator.SetBool("mirror", true);
-        }
         //mAnimator.CrossFade("spinmove", 0.2f, 0, -0.2f);
         //mAnimator.Play("spinmove", 0);
         mAnimator.SetTrigger("cross_over");
@@ -112,6 +102,11 @@ public class TestMecAnim : MonoBehaviour
         GUILayout.BeginHorizontal();
         Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 1f, GUILayout.Width(500));
         GUILayout.Label(Time.timeScale.ToString("F3"));
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        MoveControl ctrl = GetComponent<MoveControl>();
+        GUI.color = Color.red;
+        GUILayout.Label("X:" + ctrl.h.ToString("F3") + " Y:" + ctrl.v.ToString("F3"));
         GUILayout.EndHorizontal();
     }
 }

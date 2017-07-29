@@ -7,9 +7,9 @@ public enum BodyType
     Char2_Fat,
     Char3_Tall,
     Char4_Short,
-#endif
     Tang,
     Hulk,
+#endif
     Count,
 }
 

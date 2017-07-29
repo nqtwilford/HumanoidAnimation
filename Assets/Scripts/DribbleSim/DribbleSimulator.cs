@@ -56,6 +56,9 @@ public class DribbleSimulator : MonoBehaviour
 
     bool mReattachBall = false;
 
+    public const float BALL_RADIUS = 0.123f;
+    public const float GRAVITY = -9.8f;
+
     public BodyType BodyType { get { return mBodyType; } }
     BodyType mBodyType;
     Animator mAnimator;
@@ -68,8 +71,6 @@ public class DribbleSimulator : MonoBehaviour
     AnimCtrlData mControllerData = null;
 
     Vector3 mVelocity;
-    [HideInInspector]
-    public bool mMirror = false;
 
     void Awake()
     {
@@ -103,17 +104,12 @@ public class DribbleSimulator : MonoBehaviour
             {
                 Vector3 position = mBall.transform.localPosition;
                 position += mVelocity * Time.deltaTime;
-                if (position.y <= 0)
-                {
-                    position.y = -position.y;
-                    mVelocity.y = -mVelocity.y;
-                }
                 mBall.transform.localPosition = position;
+                mVelocity.y += GRAVITY * Time.deltaTime;
             }
             else
                 State = DribbleState.InHand;
         }
-
     }
 
     void LateUpdate()
@@ -142,7 +138,7 @@ public class DribbleSimulator : MonoBehaviour
         else if (mState == DribbleState.Dribbling)
         {
             mBall.SetParent(transform, true);
-            mBall.localScale = Vector3.one * 0.246f / transform.localScale.y;
+            mBall.localScale = Vector3.one * BALL_RADIUS * 2 / transform.localScale.y;
             //mBall.SetParent(null, true);
             //mBall.localScale = Vector3.one / 5;
         }
@@ -150,7 +146,7 @@ public class DribbleSimulator : MonoBehaviour
         {
             Debug.AssertFormat(mBall != null, "No ball when setting dribble state to InHand.");
             mBall.SetParent(mHands[(int)Hand], false);
-            mBall.localScale = Vector3.one * 0.246f / transform.localScale.y;
+            mBall.localScale = Vector3.one * BALL_RADIUS * 2 / transform.localScale.y;
             mBall.localPosition = Vector3.zero;
         }
     }
@@ -202,7 +198,20 @@ public class DribbleSimulator : MonoBehaviour
                 Debug.Assert(mCurDataEntry != null && mCurDataEntry1 != null);
                 if (stateInfo.shortNameHash == mDribblingStateInfo.shortNameHash)
                 {
-                    In(normalizedTime, t, mCurDataEntry, mCurDataEntry1);
+                    if (mVelocity.y < 0)
+                    {
+                        float boundNormalizedTime = Mathf.Lerp(mCurDataEntry.BounceNormalizedTime, mCurDataEntry1.BounceNormalizedTime, t);
+                        if (normalizedTime >= boundNormalizedTime)
+                            Bounce(stateInfo, normalizedTime, t, mCurDataEntry, mCurDataEntry1);
+                    }
+                    else if (mVelocity.y > 0)
+                    {
+                        float inNormalizedTime = Mathf.Lerp(mCurDataEntry.InNormalizedTime, mCurDataEntry1.InNormalizedTime, t);
+                        if (normalizedTime >= inNormalizedTime)
+                            In(normalizedTime, t, mCurDataEntry, mCurDataEntry1);
+                    }
+                    else
+                        Debug.Assert(false, "Horizontal velocity can't be 0");
                 }
             }
         }
@@ -225,10 +234,18 @@ public class DribbleSimulator : MonoBehaviour
                 Debug.Assert(mCurDataEntry != null, "No current dribble data entry.");
                 if (stateInfo.shortNameHash == mDribblingStateInfo.shortNameHash)
                 {
-                    if (normalizedTime >= mCurDataEntry.InNormalizedTime)
+                    if (mVelocity.y < 0)
                     {
-                        In();
+                        if (normalizedTime >= mCurDataEntry.BounceNormalizedTime)
+                            Bounce(stateInfo, normalizedTime, mCurDataEntry);
                     }
+                    else if (mVelocity.y > 0)
+                    {
+                        if (normalizedTime >= mCurDataEntry.InNormalizedTime)
+                            In();
+                    }
+                    else
+                        Debug.Assert(false, "Horizontal velocity can't be 0");
                 }
             }
         }
@@ -238,16 +255,11 @@ public class DribbleSimulator : MonoBehaviour
     {
         float playSpeed = stateInfo.speed * stateInfo.speedMultiplier;
         float stateLength = stateInfo.length * playSpeed;
-        float time = (entry.InTime - normalizedTime * stateLength) / playSpeed;
+        float outInTime = (entry.InNormalizedTime * stateLength - normalizedTime * stateLength) / playSpeed;
+        float outBounceTime = (entry.BounceNormalizedTime * stateLength - normalizedTime * stateLength) / playSpeed;
         Vector3 outPos = entry.OutPosition[(int)BodyType];
         Vector3 inPos = entry.InPosition[(int)BodyType];
-        if (mMirror)
-        {
-            outPos.x = -outPos.x;
-            inPos.x = -inPos.x;
-        }
-        mVelocity = (inPos - outPos) / time;
-        mVelocity.y = -(inPos.y + outPos.y) / time;
+        mVelocity = CalcOutVelocity(outPos, inPos, outInTime, outBounceTime);
         State = DribbleState.Dribbling;
         mDribblingStateInfo = stateInfo;
         mCurDataEntry = entry;
@@ -261,36 +273,62 @@ public class DribbleSimulator : MonoBehaviour
         DribbleData.Entry entry0, DribbleData.Entry entry1)
     {
         float outNormalizedTime = Mathf.Lerp(entry0.OutNormalizedTime, entry1.OutNormalizedTime, t);
+        float bounceNormalizedTime = Mathf.Lerp(entry0.BounceNormalizedTime, entry1.BounceNormalizedTime, t);
         float inNormalizedTime = Mathf.Lerp(entry0.InNormalizedTime, entry1.InNormalizedTime, t);
         if (normalizedTime < outNormalizedTime || normalizedTime > inNormalizedTime)
             return;
 
-        float playSpeed = stateInfo.speed * stateInfo.speedMultiplier;
-        float stateLength = stateInfo.length * playSpeed;
-        float time = (inNormalizedTime * stateLength - normalizedTime * stateLength) / playSpeed;
+        float outInTime = (inNormalizedTime - normalizedTime) * stateInfo.length;
+        float outBounceTime = (bounceNormalizedTime - normalizedTime) * stateInfo.length;
 
-        Vector3 outPos0 = entry0.OutPosition[(int)BodyType];
-        Vector3 outPos1 = entry1.OutPosition[(int)BodyType];
-        Vector3 outPos = Vector3.Lerp(outPos0, outPos1, t);
-        Vector3 inPos0 = entry0.InPosition[(int)BodyType];
-        Vector3 inPos1 = entry1.InPosition[(int)BodyType];
-        Vector3 inPos = Vector3.Lerp(inPos0, inPos1, t);
-        if (mMirror)
-        {
-            outPos.x = -outPos.x;
-            inPos.x = -inPos.x;
-        }
-        mVelocity = (inPos - outPos) / time;
-        mVelocity.y = -(inPos.y + outPos.y) / time;
+        Vector3 outPos = Vector3.Lerp(entry0.OutPosition[(int)BodyType], entry1.OutPosition[(int)BodyType], t);
+        Vector3 inPos = Vector3.Lerp(entry0.InPosition[(int)BodyType], entry1.InPosition[(int)BodyType], t);
+        mVelocity = CalcOutVelocity(outPos, inPos, outInTime, outBounceTime);
         State = DribbleState.Dribbling;
         mDribblingStateInfo = stateInfo;
         mCurDataEntry = entry0;
         mCurDataEntry1 = entry1;
 
+        //Debug.LogFormat("DribbleOut, NTime:{0} outNTime:{1}", normalizedTime, outNormalizedTime);
         //Utils.DrawPoint("OutPos", transform.TransformPoint(outPos), Color.red);
         //Utils.DrawPoint("InPos", transform.TransformPoint(inPos), Color.blue);
         ////Utils.DrawPoint("OutPos", outPos, Color.red);
         //Debug.Break();
+    }
+
+    Vector3 CalcOutVelocity(Vector3 outPos, Vector3 inPos, float outInTime, float outBounceTime)
+    {
+        Vector3 velocity = (inPos - outPos) / outInTime;
+        float outHeight = (BALL_RADIUS - outPos.y);
+        float vh = (outHeight / outBounceTime - GRAVITY * outBounceTime / 2);
+        velocity.y = vh;
+        return velocity;
+    }
+
+    void Bounce(AnimatorStateInfo stateInfo, float normalizedTime, DribbleData.Entry entry)
+    {
+        float stateLength = stateInfo.length;
+        float bounceInTime = (entry.InNormalizedTime - normalizedTime) * stateLength;
+        Vector3 inPos = entry.InPosition[(int)BodyType];
+        CalcInVelocity(mBall.transform.localPosition, inPos, bounceInTime);
+    }
+
+    void Bounce(AnimatorStateInfo stateInfo, float normalizedTime, float t,
+        DribbleData.Entry entry0, DribbleData.Entry entry1)
+    {
+        float inNormalizedTime = Mathf.Lerp(entry0.InNormalizedTime, entry1.InNormalizedTime, t);
+        float bounceInTime = (inNormalizedTime - normalizedTime) * stateInfo.length;
+
+        Vector3 inPos = Vector3.Lerp(entry0.InPosition[(int)BodyType], entry1.InPosition[(int)BodyType], t);
+
+        CalcInVelocity(mBall.transform.localPosition, inPos, bounceInTime);
+    }
+
+    void CalcInVelocity(Vector3 startPos, Vector3 inPos, float bounceInTime)
+    {
+        float inHeight = (inPos.y - startPos.y);
+        float vh = (inHeight / bounceInTime - GRAVITY * bounceInTime / 2);
+        mVelocity.y = vh;
     }
 
     void In()
@@ -301,21 +339,14 @@ public class DribbleSimulator : MonoBehaviour
 
         Hand hand = mCurDataEntry.InHand;
         State = DribbleState.InHand;
-        if (mMirror)
-            Hand = MirrorHand(hand);
-        else
-            Hand = hand;
+        Hand = hand;
         mDribblingStateInfo = new AnimatorStateInfo();
         mCurDataEntry = null;
     }
 
     void In(float normalizedTime, float t, DribbleData.Entry entry0, DribbleData.Entry entry1)
     {
-        float inNormalizedTime = Mathf.Lerp(entry0.InNormalizedTime, entry1.InNormalizedTime, t);
-        Debug.LogFormat("DribbleIn, NTime:{0} inNTime:{1}", normalizedTime, inNormalizedTime);
-        if (normalizedTime < inNormalizedTime)
-            return;
-
+        //Debug.LogFormat("DribbleIn, NTime:{0} inNTime:{1}", normalizedTime, inNormalizedTime);
         //Utils.DrawPoint("InPos", transform.TransformPoint(mCurDataEntry.InPosition[(int)BodyType]), Color.blue);
         //Utils.DrawPoint("InPos", mInPos, Color.blue);
         //Debug.Break();
@@ -323,10 +354,7 @@ public class DribbleSimulator : MonoBehaviour
         Debug.Assert(entry0.InHand == entry1.InHand);
         Hand hand = entry0.InHand;
         State = DribbleState.InHand;
-        if (mMirror)
-            Hand = MirrorHand(hand);
-        else
-            Hand = hand;
+        Hand = hand;
         mDribblingStateInfo = new AnimatorStateInfo();
         mCurDataEntry = null;
     }

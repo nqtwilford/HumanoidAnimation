@@ -67,6 +67,13 @@ public class DribbleSimRuntimeSampler : MonoBehaviour, IRuntimeSampler
 #endif
     }
 
+    void BounceGround()
+    {
+#if DEBUG_SAMPLE
+        Debug.Break();
+#endif
+    }
+
     void DribbleIn()
     {
         StartCoroutine(SampleDribbleIn());

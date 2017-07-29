@@ -3,7 +3,7 @@ using UnityEditor;
 
 public static class DribbleSimSampler
 {
-    public static DribbleData Sample(GameObject[] bodies, AnimationClip[] clips)
+    public static DribbleData Sample(AnimationClip[] clips)
     {
         string filename = "Assets/Resources/Data/Dribble.asset";
         DribbleData data = AssetDatabase.LoadAssetAtPath<DribbleData>(filename);
@@ -17,7 +17,7 @@ public static class DribbleSimSampler
         foreach (var clip in clips)
         {
             //Debug.LogFormat("导出运球数据，Clip: {0}", clip.name);
-            var clipInfo = Sample(bodies, clip);
+            var clipInfo = Sample(clip);
             data.AddClipData(clipInfo);
         }
 
@@ -26,7 +26,7 @@ public static class DribbleSimSampler
         return data;
     }
 
-    public static DribbleData.Clip Sample(GameObject[] bodies, AnimationClip clip)
+    public static DribbleData.Clip Sample(AnimationClip clip)
     {
         var clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
         DribbleData.Clip clipInfo = new DribbleData.Clip()
@@ -58,36 +58,17 @@ public static class DribbleSimSampler
                     //OutHand = hand,
                 };
                 events[i].messageOptions = SendMessageOptions.DontRequireReceiver;
-
-                /*
-                for (int i = 0; i < (int)BodyType.Count; ++i)
+            }
+            else if (evt.functionName == "BounceGround")
+            {
+                if (curEventInfo == null)
                 {
-                    GameObject body = bodies[i];
-                    Debug.AssertFormat(body != null, "Body is null. {0}", (BodyType)i);
-
-                    AnimationMode.BeginSampling();
-                    AnimationMode.SampleAnimationClip(body, clip, evt.time);
-                    AnimationMode.EndSampling();
-
-                    Transform leftBall = body.transform.Find(Utils.NODE_PATH_LEFT_BALL);
-                    if (leftBall == null)
-                    {
-                        Debug.LogErrorFormat("GameObject: {0} has no bone Leftball.", body.name);
-                        return null;
-                    }
-                    Transform rightBall = body.transform.Find(Utils.NODE_PATH_RIGHT_BALL);
-                    if (rightBall == null)
-                    {
-                        Debug.LogErrorFormat("GameObject: {0} has no bone Rightball.", body.name);
-                        return null;
-                    }
-
-                    Vector3 pos = (hand == Hand.Left ? leftBall.position : rightBall.position);
-                    if (clipSettings.mirror)
-                        pos.x = -pos.x;
-                    curEventInfo.OutPosition[i] = pos;
+                    Debug.LogErrorFormat("Out与In不匹配, clip:{0}", clip.name);
+                    return null;
                 }
-                */
+                curEventInfo.BounceTime = evt.time;
+                curEventInfo.BounceNormalizedTime = evt.time / clip.length;
+                events[i].messageOptions = SendMessageOptions.DontRequireReceiver;
             }
             else if (evt.functionName == "DribbleIn")
             {
@@ -96,6 +77,7 @@ public static class DribbleSimSampler
                     Debug.LogErrorFormat("Out与In不匹配, clip:{0}", clip.name);
                     return null;
                 }
+                Debug.Assert(curEventInfo.BounceTime != 0);
 
                 Hand hand;
                 DribbleSimulator.TryParseInInfo(evt.stringParameter, out hand);
@@ -104,36 +86,6 @@ public static class DribbleSimSampler
                 curEventInfo.InTime = evt.time;
                 curEventInfo.InNormalizedTime = evt.time / clip.length;
                 events[i].messageOptions = SendMessageOptions.DontRequireReceiver;
-
-                /*
-                for (int i = 0; i < (int)BodyType.Count; ++i)
-                {
-                    GameObject body = bodies[i];
-                    Debug.AssertFormat(body != null, "Body is null. {0}", (BodyType)i);
-
-                    AnimationMode.BeginSampling();
-                    AnimationMode.SampleAnimationClip(body, clip, evt.time);
-                    AnimationMode.EndSampling();
-
-                    Transform leftBall = body.transform.Find(Utils.NODE_PATH_LEFT_BALL);
-                    if (leftBall == null)
-                    {
-                        Debug.LogErrorFormat("GameObject: {0} has no bone Leftball.", body.name);
-                        return null;
-                    }
-                    Transform rightBall = body.transform.Find(Utils.NODE_PATH_RIGHT_BALL);
-                    if (rightBall == null)
-                    {
-                        Debug.LogErrorFormat("GameObject: {0} has no bone Rightball.", body.name);
-                        return null;
-                    }
-
-                    Vector3 pos = (hand == Hand.Left ? leftBall.position : rightBall.position);
-                    if (clipSettings.mirror)
-                        pos.x = -pos.x;
-                    curEventInfo.InPosition[i] = pos;
-                }
-                */
 
                 clipInfo.AddEntry(curEventInfo);
                 curEventInfo = null;

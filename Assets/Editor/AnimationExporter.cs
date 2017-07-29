@@ -108,7 +108,7 @@ public class AnimationExporter : EditorWindow
                 mBodies[i] = inst;
             }
 
-            DribbleData dribbleData = DribbleSimSampler.Sample(mBodies, controller.animationClips);
+            DribbleData dribbleData = DribbleSimSampler.Sample(controller.animationClips);
             //TargetMatchingSampler.Sample(mBodies, controller.animationClips);
 
             AnimationMode.StopAnimationMode();
@@ -144,7 +144,7 @@ public class AnimationExporter : EditorWindow
     AnimatorController CreateSampleAnimatorController()
     {
 #if DEBUG_SAMPLE
-        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/Char1@standwithball");
+        AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/Char1@spinmove");
 #else
         AnimationClip[] clips = Resources.LoadAll<AnimationClip>("FBX/Animations/");
 #endif

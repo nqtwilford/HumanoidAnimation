@@ -17,7 +17,7 @@ public class StateBehaviour : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.shortNameHash != mHashMove)
+        if (stateInfo.shortNameHash == mHashMove)
             ModifySpeedMultiplier(animator, stateInfo.shortNameHash);
         //var curStateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
         //if (curStateInfo.shortNameHash == mHashRun)
@@ -46,7 +46,8 @@ public class StateBehaviour : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        ModifySpeedMultiplier(animator, stateInfo.shortNameHash);
+        if (stateInfo.shortNameHash == mHashMove)
+            ModifySpeedMultiplier(animator, stateInfo.shortNameHash);
     }
 
     void ModifySpeedMultiplier(Animator animator, int nameHash)
