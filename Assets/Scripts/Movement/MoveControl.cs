@@ -5,7 +5,7 @@ public class MoveControl : MonoBehaviour
 {
     const float TURN_SPEED = 5f;
     public const float MAX_SPEED = 2.8f;
-    const float ACCELERATION = 2000f;
+    const float ACCELERATION = 20f;
 
     public float Speed
     {
@@ -41,8 +41,6 @@ public class MoveControl : MonoBehaviour
 
     Animator mAnimator;
 
-    public float h, v;
-
     void Awake()
     {
         mAnimator = GetComponent<Animator>();
@@ -62,8 +60,8 @@ public class MoveControl : MonoBehaviour
             pos += mVelocity * Time.deltaTime;
             mPosition = pos;
 
-            h = Input.GetAxis("Horizontal");
-            v = Input.GetAxis("Vertical");
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
             if (Mathf.Approximately(h, 0f) && Mathf.Approximately(v, 0f))
             {
                 Speed = Mathf.Clamp(Speed - ACCELERATION * Time.deltaTime, 0f, MAX_SPEED);

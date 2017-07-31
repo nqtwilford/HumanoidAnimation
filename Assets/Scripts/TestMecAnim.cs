@@ -26,7 +26,7 @@ public class TestMecAnim : MonoBehaviour
 
     void Start()
     {
-        mDribbleSim.State = DribbleState.InHand;
+        mDribbleSim.State = DribbleState.Holding;
         mDribbleSim.Hand = Hand.Right;
     }
 
@@ -69,7 +69,7 @@ public class TestMecAnim : MonoBehaviour
 
     IEnumerator CrossOver()
     {
-        while (mDribbleSim.State != DribbleState.InHand)
+        while (mDribbleSim.State != DribbleState.Holding)
             yield return null;
         //mAnimator.CrossFade("spinmove", 0.2f, 0, -0.2f);
         //mAnimator.Play("spinmove", 0);
@@ -78,21 +78,21 @@ public class TestMecAnim : MonoBehaviour
 
     IEnumerator Pass()
     {
-        while (mDribbleSim.State != DribbleState.InHand)
+        while (mDribbleSim.State != DribbleState.Holding)
             yield return null;
         mAnimator.SetTrigger("pass");
     }
 
     IEnumerator Shoot()
     {
-        while (mDribbleSim.State != DribbleState.InHand)
+        while (mDribbleSim.State != DribbleState.Holding)
             yield return null;
         mAnimator.SetTrigger("shoot");
     }
 
     IEnumerator Dunk()
     {
-        while (mDribbleSim.State != DribbleState.InHand)
+        while (mDribbleSim.State != DribbleState.Holding)
             yield return null;
         mAnimator.SetTrigger("dunk");
     }
@@ -102,11 +102,6 @@ public class TestMecAnim : MonoBehaviour
         GUILayout.BeginHorizontal();
         Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 1f, GUILayout.Width(500));
         GUILayout.Label(Time.timeScale.ToString("F3"));
-        GUILayout.EndHorizontal();
-        GUILayout.BeginHorizontal();
-        MoveControl ctrl = GetComponent<MoveControl>();
-        GUI.color = Color.red;
-        GUILayout.Label("X:" + ctrl.h.ToString("F3") + " Y:" + ctrl.v.ToString("F3"));
         GUILayout.EndHorizontal();
     }
 }
